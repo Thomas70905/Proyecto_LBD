@@ -4,17 +4,18 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Cliente extends Model
+class Veterinario extends Model
 {
-    // Table name is "clientes" (default for model "Cliente")
+    // Table name is "veterinarios"
     protected $fillable = [
         'nombreCompleto',
+        'fechaInicio',
         'telefono',
-        'direccion',
+        'especialidad',
         'idUsuario',
     ];
 
-    // Relationship: A cliente belongs to a usuario
+    // Relationship: A veterinario belongs to a usuario
     public function usuario()
     {
         return $this->belongsTo(Usuario::class, 'idUsuario');

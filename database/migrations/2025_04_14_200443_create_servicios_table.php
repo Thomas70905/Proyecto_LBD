@@ -16,7 +16,6 @@ return new class extends Migration {
             )
         ");
 
-        // Convert ConsultarServicios procedure to use an OUT parameter for the cursor
         DB::unprepared("
             CREATE OR REPLACE PROCEDURE ConsultarServicios(cur OUT SYS_REFCURSOR) IS
             BEGIN
@@ -57,16 +56,32 @@ return new class extends Migration {
                 COMMIT;
             END;
         ");
+
+        DB::unprepared("
+            CREATE OR REPLACE PROCEDURE InsertarServicio(
+                p_nombre IN VARCHAR2,
+                p_descripcion IN CLOB,
+                p_precio IN NUMBER,
+                p_duracion IN NUMBER,
+                p_id OUT NUMBER
+            ) IS
+            BEGIN
+                INSERT INTO servicios (nombre, descripcion, precio, duracion)
+                VALUES (p_nombre, p_descripcion, p_precio, p_duracion)
+                RETURNING id INTO p_id;
+                COMMIT;
+            END;
+        ");
     }
     
     public function down(): void
     {
-        // Drop stored procedures first
         DB::unprepared("DROP PROCEDURE ConsultarServicios");
         DB::unprepared("DROP PROCEDURE ConsultarServicioPorId");
         DB::unprepared("DROP PROCEDURE ActualizarServicio");
         DB::unprepared("DROP PROCEDURE EliminarServicioPorId");
-        
+        DB::unprepared("DROP PROCEDURE InsertarServicio");
+    
         DB::unprepared("DROP TABLE servicios");
     }
 };

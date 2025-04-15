@@ -61,6 +61,23 @@ return new class extends Migration {
                 COMMIT;
             END;
         ");
+        
+        DB::unprepared("
+            CREATE OR REPLACE PROCEDURE InsertarCita(
+                p_idMascota IN NUMBER,
+                p_fechaInicio IN DATE,
+                p_idServicio IN NUMBER,
+                p_descripcion IN CLOB,
+                p_asistencia IN NUMBER,
+                p_id OUT NUMBER
+            ) IS
+            BEGIN
+                INSERT INTO citas (idMascota, fechaInicio, idServicio, descripcion, asistencia)
+                VALUES (p_idMascota, p_fechaInicio, p_idServicio, p_descripcion, p_asistencia)
+                RETURNING id INTO p_id;
+                COMMIT;
+            END;
+        ");
     }
     
     public function down(): void
@@ -69,6 +86,7 @@ return new class extends Migration {
         DB::unprepared("DROP PROCEDURE ConsultarCitaPorId");
         DB::unprepared("DROP PROCEDURE ActualizarCita");
         DB::unprepared("DROP PROCEDURE EliminarCitaPorId");
+        DB::unprepared("DROP PROCEDURE InsertarCita");
         
         DB::unprepared("DROP TABLE citas");
     }

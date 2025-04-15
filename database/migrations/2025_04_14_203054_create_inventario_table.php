@@ -23,14 +23,14 @@ return new class extends Migration {
                 OPEN cur FOR SELECT * FROM inventario;
             END;
         ");
-        
+
         DB::unprepared("
             CREATE OR REPLACE PROCEDURE ConsultarInventarioPorId(p_id IN NUMBER, cur OUT SYS_REFCURSOR) IS
             BEGIN
                 OPEN cur FOR SELECT * FROM inventario WHERE id = p_id;
             END;
         ");
-        
+
         DB::unprepared("
             CREATE OR REPLACE PROCEDURE ActualizarInventario(
                 p_id IN NUMBER,
@@ -51,7 +51,7 @@ return new class extends Migration {
                 COMMIT;
             END;
         ");
-        
+
         DB::unprepared("
             CREATE OR REPLACE PROCEDURE EliminarInventarioPorId(p_id IN NUMBER) IS
             BEGIN
@@ -59,15 +59,33 @@ return new class extends Migration {
                 COMMIT;
             END;
         ");
+
+        DB::unprepared("
+            CREATE OR REPLACE PROCEDURE InsertarInventario(
+                p_nombreProducto IN VARCHAR2,
+                p_descripcion IN CLOB,
+                p_precio IN NUMBER,
+                p_cantidadUnidades IN NUMBER,
+                p_fechaCaducidad IN DATE,
+                p_id OUT NUMBER
+            ) IS
+            BEGIN
+                INSERT INTO inventario (nombreProducto, descripcion, precio, cantidadUnidades, fechaCaducidad)
+                VALUES (p_nombreProducto, p_descripcion, p_precio, p_cantidadUnidades, p_fechaCaducidad)
+                RETURNING id INTO p_id;
+                COMMIT;
+            END;
+        ");
     }
-    
+
     public function down(): void
     {
         DB::unprepared("DROP PROCEDURE ConsultarInventario");
         DB::unprepared("DROP PROCEDURE ConsultarInventarioPorId");
         DB::unprepared("DROP PROCEDURE ActualizarInventario");
         DB::unprepared("DROP PROCEDURE EliminarInventarioPorId");
-        
+        DB::unprepared("DROP PROCEDURE InsertarInventario");
+
         DB::unprepared("DROP TABLE inventario CASCADE CONSTRAINTS PURGE");
     }
 };

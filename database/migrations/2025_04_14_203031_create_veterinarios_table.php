@@ -1,5 +1,4 @@
 <?php
-
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
 
@@ -60,6 +59,23 @@ return new class extends Migration {
                 COMMIT;
             END;
         ");
+        
+        DB::unprepared("
+            CREATE OR REPLACE PROCEDURE InsertarVeterinario(
+                p_nombreCompleto IN VARCHAR2,
+                p_fechaInicio IN DATE,
+                p_telefono IN VARCHAR2,
+                p_especialidad IN VARCHAR2,
+                p_idUsuario IN NUMBER,
+                p_id OUT NUMBER
+            ) IS
+            BEGIN
+                INSERT INTO veterinarios (nombreCompleto, fechaInicio, telefono, especialidad, idUsuario)
+                VALUES (p_nombreCompleto, p_fechaInicio, p_telefono, p_especialidad, p_idUsuario)
+                RETURNING id INTO p_id;
+                COMMIT;
+            END;
+        ");
     }
     
     public function down(): void
@@ -68,6 +84,7 @@ return new class extends Migration {
         DB::unprepared("DROP PROCEDURE ConsultarVeterinarioPorId");
         DB::unprepared("DROP PROCEDURE ActualizarVeterinario");
         DB::unprepared("DROP PROCEDURE EliminarVeterinarioPorId");
+        DB::unprepared("DROP PROCEDURE InsertarVeterinario");
         
         DB::unprepared("DROP TABLE veterinarios");
     }

@@ -2,30 +2,23 @@
 
 namespace App\Http\Controllers;
 
+use App\Handlers\ServiceHandler;
 use Illuminate\Http\Request;
 
 class ServiceController extends Controller
 {
+    protected $serviceHandler;
+
+    public function __construct(ServiceHandler $serviceHandler)
+    {
+        $this->serviceHandler = $serviceHandler;
+    }
+
     // Muestra la lista de servicios
     public function index()
     {
-        // Datos de ejemplo; reemplaza con consultas al modelo Service cuando lo tengas
-        $services = [
-            [
-                'id'          => 1,
-                'name'        => 'Servicio A',
-                'description' => 'Descripción del Servicio A',
-                'duration'    => 60,
-                'cost'        => 50.00,
-            ],
-            [
-                'id'          => 2,
-                'name'        => 'Servicio B',
-                'description' => 'Descripción del Servicio B',
-                'duration'    => 45,
-                'cost'        => 35.00,
-            ],
-        ];
+        // Fetch services using the handler
+        $services = $this->serviceHandler->getAllServices();
 
         return view('services.index', compact('services'));
     }
@@ -39,7 +32,7 @@ class ServiceController extends Controller
     // Almacena el nuevo servicio
     public function store(Request $request)
     {
-        // Validación de ejemplo (ajusta según necesites)
+        // Validación de los datos
         $request->validate([
             'name'        => 'required|string|max:255',
             'description' => 'required|string',
@@ -47,22 +40,22 @@ class ServiceController extends Controller
             'cost'        => 'required|numeric',
         ]);
 
-        // Aquí guardarías el servicio en la base de datos.
-        // Por ahora, redirige al índice con un mensaje de éxito.
+        // Llama al procedimiento almacenado para insertar el servicio
+        $this->serviceHandler->insertService(
+            $request->name,
+            $request->description,
+            $request->cost,
+            $request->duration
+        );
+
         return redirect()->route('services.index')->with('status', 'Servicio agregado exitosamente.');
     }
 
     // Muestra el formulario para editar un servicio existente
     public function edit($id)
     {
-        // Datos de ejemplo para un servicio a editar. Reemplaza con consulta al modelo Service.
-        $service = [
-            'id'          => $id,
-            'name'        => 'Servicio A',
-            'description' => 'Descripción del Servicio A',
-            'duration'    => 60,
-            'cost'        => 50.00,
-        ];
+        // Fetch the service by ID using the handler
+        $service = $this->serviceHandler->getServiceById($id);
 
         return view('services.edit', compact('service'));
     }
@@ -70,7 +63,7 @@ class ServiceController extends Controller
     // Actualiza el servicio existente
     public function update(Request $request, $id)
     {
-        // Validación de ejemplo (ajusta según necesites)
+        // Validación de los datos
         $request->validate([
             'name'        => 'required|string|max:255',
             'description' => 'required|string',
@@ -78,16 +71,24 @@ class ServiceController extends Controller
             'cost'        => 'required|numeric',
         ]);
 
-        // Aquí actualizarías el servicio en la base de datos.
-        // Por ahora, redirige al índice con un mensaje de éxito.
+        // Llama al procedimiento almacenado para actualizar el servicio
+        $this->serviceHandler->updateService(
+            $id,
+            $request->name,
+            $request->description,
+            $request->cost,
+            $request->duration
+        );
+
         return redirect()->route('services.index')->with('status', 'Servicio actualizado exitosamente.');
     }
 
     // Elimina un servicio
     public function destroy($id)
     {
-        // Aquí eliminarías el servicio usando el modelo Service.
-        // Por ahora, redirige al índice con un mensaje de éxito.
+        // Llama al procedimiento almacenado para eliminar el servicio
+        $this->serviceHandler->deleteService($id);
+
         return redirect()->route('services.index')->with('status', 'Servicio eliminado exitosamente.');
     }
 }

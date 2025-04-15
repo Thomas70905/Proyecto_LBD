@@ -1,5 +1,4 @@
 <?php
-
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
 
@@ -63,6 +62,24 @@ return new class extends Migration {
                 COMMIT;
             END;
         ");
+        
+        DB::unprepared("
+            CREATE OR REPLACE PROCEDURE InsertarMascota(
+                p_nombreCompleto IN VARCHAR2,
+                p_edad IN NUMBER,
+                p_peso IN NUMBER,
+                p_raza IN VARCHAR2,
+                p_especie IN VARCHAR2,
+                p_idCliente IN NUMBER,
+                p_id OUT NUMBER
+            ) IS
+            BEGIN
+                INSERT INTO mascotas (nombreCompleto, edad, peso, raza, especie, idCliente)
+                VALUES (p_nombreCompleto, p_edad, p_peso, p_raza, p_especie, p_idCliente)
+                RETURNING id INTO p_id;
+                COMMIT;
+            END;
+        ");
     }
     
     public function down(): void
@@ -71,6 +88,7 @@ return new class extends Migration {
         DB::unprepared("DROP PROCEDURE ConsultarMascotaPorId");
         DB::unprepared("DROP PROCEDURE ActualizarMascota");
         DB::unprepared("DROP PROCEDURE EliminarMascotaPorId");
+        DB::unprepared("DROP PROCEDURE InsertarMascota");
         DB::unprepared("DROP TABLE mascotas CASCADE CONSTRAINTS PURGE");
     }
 };

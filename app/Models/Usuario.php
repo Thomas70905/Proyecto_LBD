@@ -2,16 +2,17 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 
-class Usuario extends Model
+class Usuario extends Authenticatable
 {
-    // Table name is "usuarios" (default for model "Usuario")
+    protected $table = 'usuarios';
+
     protected $fillable = [
         'email',
         'password',
         'role',
     ];
 
-    // You may use mutators, relationships, etc.
+    // Puedes agregar mutators para hashear la contraseña, relaciones, etc.
 }

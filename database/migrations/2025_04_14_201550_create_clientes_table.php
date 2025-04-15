@@ -17,23 +17,25 @@ return new class extends Migration {
             )
         ");
         
-        // Update your stored procedures to use Oracle syntax if needed.
+        // Procedimiento para consultar todos los clientes
         DB::unprepared("
             CREATE OR REPLACE PROCEDURE ConsultarClientes IS
             BEGIN
-                -- You might open a cursor here instead if needed.
+                -- Puedes abrir un cursor aquí si lo necesitas
                 NULL;
             END;
         ");
         
+        // Procedimiento para consultar un cliente por id
         DB::unprepared("
             CREATE OR REPLACE PROCEDURE ConsultarClientePorId(p_id IN NUMBER) IS
             BEGIN
-                -- You might open a cursor here instead if needed.
+                -- Puedes abrir un cursor aquí si lo necesitas
                 NULL;
             END;
         ");
         
+        // Procedimiento para actualizar un cliente
         DB::unprepared("
             CREATE OR REPLACE PROCEDURE ActualizarCliente(
                 p_id IN NUMBER,
@@ -53,10 +55,28 @@ return new class extends Migration {
             END;
         ");
         
+        // Procedimiento para eliminar un cliente por id
         DB::unprepared("
             CREATE OR REPLACE PROCEDURE EliminarClientePorId(p_id IN NUMBER) IS
             BEGIN
                 DELETE FROM clientes WHERE id = p_id;
+                COMMIT;
+            END;
+        ");
+        
+        // Nuevo procedimiento para insertar un cliente y retornar su id
+        DB::unprepared("
+            CREATE OR REPLACE PROCEDURE InsertarCliente(
+                p_nombreCompleto IN VARCHAR2,
+                p_telefono IN VARCHAR2,
+                p_direccion IN VARCHAR2,
+                p_idUsuario IN NUMBER,
+                p_id OUT NUMBER
+            ) IS
+            BEGIN
+                INSERT INTO clientes (nombreCompleto, telefono, direccion, idUsuario)
+                VALUES (p_nombreCompleto, p_telefono, p_direccion, p_idUsuario)
+                RETURNING id INTO p_id;
                 COMMIT;
             END;
         ");
@@ -68,6 +88,8 @@ return new class extends Migration {
         DB::unprepared("DROP PROCEDURE ConsultarClientePorId");
         DB::unprepared("DROP PROCEDURE ActualizarCliente");
         DB::unprepared("DROP PROCEDURE EliminarClientePorId");
+        DB::unprepared("DROP PROCEDURE InsertarCliente");
+        
         DB::unprepared("DROP TABLE clientes");
     }
 };

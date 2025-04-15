@@ -20,7 +20,6 @@
                         <option value="Consulta General">Consulta General</option>
                         <option value="Vacunación">Vacunación</option>
                         <option value="Desparasitación">Desparasitación</option>
-                        <!-- Agregar más opciones según sea necesario -->
                     </select>
                 </div>
                 <div class="mb-3">

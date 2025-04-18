@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\Usuario;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\ResetPasswordMail;
 
@@ -14,7 +13,7 @@ class PasswordRecoveryController extends Controller
     // Muestra el formulario de recuperación
     public function show()
     {
-        return view('password_recover');
+        return view('password_recovery');
     }
 
     // Procesa el envío del enlace de restablecimiento
@@ -26,25 +25,22 @@ class PasswordRecoveryController extends Controller
 
         $email = $request->input('email');
 
-        // Verifica si el usuario existe, pero no se informa al solicitante
-        $user = Usuario::where('email', $email)->first();
+        $user  = Usuario::where('email', $email)->first();
 
         if ($user) {
-            // Genera un token de restablecimiento
-            $token = Str::random(60);
+            // Genera un token breve
+            $token = Str::random(16);
 
-            // Almacena el token en la tabla "password_resets"
-            DB::table('password_resets')
-                ->updateOrInsert(
-                    ['email' => $email],
-                    ['token' => $token, 'created_at' => now()]
-                );
+            // TODO aqui por medio de un proceso almacenado actualizar la contraseña
+            // del usuario a la contraseña generada y actualizar el estado a recuperacion
 
-            // Envía el correo con el enlace de restablecimiento usando la clase Mailable
+
+            // Envía el correo con el enlace de recuperación usando la Mailable
             Mail::to($email)->send(new ResetPasswordMail($token));
         }
 
-        // Siempre muestra el mismo mensaje, sin importar si el usuario existe o no
-        return redirect()->back()->with('status', 'Si el correo suministrado está registrado, se ha enviado un enlace de recuperación a su correo.');
+        return back()->with('status', 
+            'Si el correo está registrado, recibirás un enlace de recuperación.'
+        );
     }
 }

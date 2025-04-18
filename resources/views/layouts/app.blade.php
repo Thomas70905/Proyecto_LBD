@@ -23,15 +23,18 @@
         <nav class="navbar navbar-expand-lg bg-body-tertiary">
             <div class="container-fluid">
                 <a class="navbar-brand" href="/">Logo</a>
+
                 <div class="d-flex align-items-center d-lg-none">
                     @auth
                         <span class="nav-link me-3">Bienvenido, {{ Auth::user()->name }}</span>
                         <form action="{{ route('logout') }}" method="POST" class="d-inline">
                             @csrf
-                            <button type="submit" class="btn btn-link nav-link" style="text-decoration: none;">Cerrar sesión</button>
+                            <button type="submit" class="btn btn-link nav-link" style="text-decoration: none;">
+                                Cerrar sesión
+                            </button>
                         </form>
                     @else
-                        <a class="nav-link me-3" href="/login">Iniciar sesión</a>
+                        <a class="nav-link me-3" href="{{ route('login') }}">Iniciar sesión</a>
                     @endauth
                     <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
                         data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false"
@@ -39,27 +42,43 @@
                         <span class="navbar-toggler-icon"></span>
                     </button>
                 </div>
+
                 <div class="collapse navbar-collapse" id="navbarNav">
                     <ul class="navbar-nav me-auto">
-                        <li class="nav-item">
-                            <a class="nav-link" href="/employees">Administrar Empleados</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="/inventory">Administrar Inventario</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="/services">Administrar Servicio</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="/appointments">Administrar Citas</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#">Historial Clinico</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#">Generacion Reportes</a>
-                        </li>
+                        @auth
+                            @if(Auth::user()->role === 'cliente')
+                                <li class="nav-item">
+                                    <a class="nav-link" href="/appointments">Administrar Citas</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="/clinical-history">Historial Clínico</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="/reports">Generación Reportes</a>
+                                </li>
+                            @elseif(Auth::user()->role === 'veterinario')
+                                <li class="nav-item">
+                                    <a class="nav-link" href="/employees">Administrar Empleados</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="/inventory">Administrar Inventario</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="/services">Administrar Servicio</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="/appointments">Administrar Citas</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="/clinical-history">Historial Clínico</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="/reports">Generación Reportes</a>
+                                </li>
+                            @endif
+                        @endauth
                     </ul>
+
                     <div class="ms-auto">
                         <ul class="navbar-nav d-flex align-items-center">
                             @auth
@@ -69,12 +88,14 @@
                                 <li class="nav-item d-flex align-items-center">
                                     <form action="{{ route('logout') }}" method="POST" class="d-inline">
                                         @csrf
-                                        <button type="submit" class="btn btn-link nav-link" style="text-decoration: none;">Cerrar sesión</button>
+                                        <button type="submit" class="btn btn-link nav-link" style="text-decoration: none;">
+                                            Cerrar sesión
+                                        </button>
                                     </form>
                                 </li>
                             @else
                                 <li class="nav-item">
-                                    <a class="nav-link me-5 d-none d-lg-block" href="/login">Iniciar sesión</a>
+                                    <a class="nav-link me-5 d-none d-lg-block" href="{{ route('login') }}">Iniciar sesión</a>
                                 </li>
                             @endauth
                         </ul>
@@ -83,9 +104,11 @@
             </div>
         </nav>
     </header>
+
     <main>
         @yield('content')
     </main>
+
     <footer class="bg-light text-center py-4 mt-5">
         <div class="container">
             <p class="mb-1">© 2025 Clínica Veterinaria Moncada. Todos los derechos reservados.</p>

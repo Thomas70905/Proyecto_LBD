@@ -38,6 +38,9 @@
                     <input type="password" class="form-control" id="password" name="password" 
                            placeholder="Introduce tu contraseña" required>
                 </div>
+                <div class="mb-2 text-end">
+                    <a href="{{ route('password.request') }}">¿Olvidaste tu contraseña?</a>
+                </div>
                 <div class="mb-3 text-center">
                     <button type="submit" class="btn btn-primary w-100">Iniciar sesión</button>
                 </div>

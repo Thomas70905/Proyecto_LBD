@@ -7,11 +7,19 @@ use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\SignInController;
+use App\Http\Controllers\PasswordRecoveryController;
 
 Route::get('/', function () {
     return view('welcome');
 });
 
+
+
+Route::get('password/recovery', [PasswordRecoveryController::class, 'show'])
+    ->name('password.request');
+
+Route::post('password/email', [PasswordRecoveryController::class, 'sendResetLink'])
+    ->name('password.email');
 Route::get('/login', [LoginController::class, 'show'])->name('login.show');
 Route::post('/login', [LoginController::class, 'login'])->name('login');
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');

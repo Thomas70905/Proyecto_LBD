@@ -8,7 +8,7 @@ class Mascota extends Model
 {
     // Table name is "mascotas"
     protected $fillable = [
-        'nombreCompleto',
+        'nombre_completo',
         'edad',
         'peso',
         'raza',

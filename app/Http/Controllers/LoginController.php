@@ -19,13 +19,25 @@ class LoginController extends Controller
             'password' => 'required'
         ]);
 
-        $credentials = $request->only('email', 'password');
+        $credentials = [
+            'email'   => $request->input('email'),
+            'password' => $request->input('password'),
+        ];
+    
 
         if (Auth::attempt($credentials)) {
+            $request->session()->regenerate();
+            $user = Auth::user();
+
+            // Si el usuario está en recuperación, redirige a una vista especial
+            if ($user->en_recuperacion) {
+                return view('change_password');
+            }
+
             return redirect()->intended('/');
         }
 
-        return redirect()->back()->with('error', 'Credenciales incorrectas.');
+        return back()->with('error', 'Credenciales incorrectas.');
     }
 
     public function logout(Request $request)

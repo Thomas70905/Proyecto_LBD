@@ -12,8 +12,9 @@
                 <tr>
                     <th>ID</th>
                     <th>Nombre</th>
-                    <th>Especialidad</th>
                     <th>Teléfono</th>
+                    <th>Correo</th>         {{-- nueva columna --}}
+                    <th>Rol</th>            {{-- nueva columna --}}
                     <th>Acciones</th>
                 </tr>
             </thead>
@@ -21,15 +22,20 @@
                 @forelse ($veterinarios as $veterinario)
                     <tr>
                         <td>{{ $veterinario['id'] }}</td>
-                        <td>{{ $veterinario['nombrecompleto'] }}</td>
-                        <td>{{ $veterinario['especialidad'] }}</td>
+                        <td>{{ $veterinario['nombre_completo'] }}</td>
                         <td>{{ $veterinario['telefono'] }}</td>
+                        <td>{{ $veterinario['email'] }}</td>      {{-- muestra correo --}}
+                        <td>{{ $veterinario['rol'] }}</td>       {{-- muestra rol --}}
                         <td>
-                            <a href="{{ route('employees.edit', $veterinario['id']) }}" class="btn btn-sm btn-primary">Editar</a>
-                            <form action="{{ route('employees.destroy', $veterinario['id']) }}" method="POST" class="d-inline">
+                            <a href="{{ route('employees.edit', $veterinario['id']) }}"
+                               class="btn btn-sm btn-primary">Editar</a>
+                            <form action="{{ route('employees.destroy', $veterinario['id']) }}"
+                                  method="POST" class="d-inline">
                                 @csrf
                                 @method('DELETE')
-                                <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('¿Está seguro de eliminar este empleado?')">
+                                <button type="submit"
+                                        class="btn btn-sm btn-danger"
+                                        onclick="return confirm('¿Está seguro de eliminar este empleado?')">
                                     Eliminar
                                 </button>
                             </form>
@@ -37,7 +43,9 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="6" class="text-center">No hay empleados registrados.</td>
+                        <td colspan="7" class="text-center">
+                            No hay empleados registrados.
+                        </td>
                     </tr>
                 @endforelse
             </tbody>

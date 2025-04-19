@@ -4,26 +4,24 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Handlers\UserHandler;
-use App\Handlers\VeterinariosHandler;
 use Exception;
+use Illuminate\Support\Arr;
 
 class EmployeeController extends Controller
 {
-    protected $userHandler;
-    protected $veterinariosHandler;
+    protected UserHandler $userHandler;
 
-    public function __construct(UserHandler $userHandler, VeterinariosHandler $veterinariosHandler)
+    public function __construct(UserHandler $userHandler)
     {
         $this->userHandler = $userHandler;
-        $this->veterinariosHandler = $veterinariosHandler;
     }
 
-    // Muestra la vista principal de administración de empleados
+    // Lista todos los empleados (veterinarios y administradores)
     public function index()
     {
         try {
-            $veterinarios = $this->veterinariosHandler->getAllVeterinarios();
-            return view('employees.index', compact('veterinarios'));
+            $empleados = $this->userHandler->getEmpleados();
+            return view('employees.index', ['veterinarios' => $empleados]);
         } catch (Exception $e) {
             return back()->with('error', 'Hubo un problema al cargar los empleados.');
         }
@@ -35,101 +33,86 @@ class EmployeeController extends Controller
         return view('employees.create');
     }
 
-    // Almacena el nuevo empleado
+    // Almacena el nuevo empleado (rol veterinario)
     public function store(Request $request)
     {
         $request->validate([
-            'nombreCompleto' => 'required|string|max:255',
-            'fechaInicio'    => 'required|date',
+            'nombre_completo' => 'required|string|max:255',
             'telefono'       => 'required|string|max:50',
-            'especialidad'   => 'required|string|max:255',
             'email'          => 'required|email|unique:usuarios,email',
         ]);
 
-        // Set the password to the email
-        $data = $request->only(['nombreCompleto', 'fechaInicio', 'telefono', 'especialidad', 'email']);
+        $data = $request->only(['nombre_completo', 'telefono', 'email']);
         $data['password'] = $data['email'];
-
         try {
-            // Register the user and veterinarian
-            $result = $this->userHandler->registerVeterinario($data);
-
-            return redirect()->route('employees.index')->with('success', 'Empleado registrado exitosamente.');
+            $this->userHandler->registerVeterinario([
+                'email'            => $data['email'],
+                'password'         => $data['password'],
+                'nombre_completo'  => $data['nombre_completo'],
+                'telefono'         => $data['telefono'],
+            ]);
+            return redirect()->route('employees.index')
+                             ->with('success', 'Empleado registrado exitosamente.');
         } catch (Exception $e) {
-            return back()->with('error', 'Hubo un problema al registrar el empleado. Por favor, inténtalo de nuevo.');
+            return back()->with('error', 'Hubo un problema al registrar el empleado.');
         }
     }
 
     // Muestra el formulario para editar un empleado
-    public function edit($id)
+    public function edit(int $id)
     {
         try {
-            $veterinario = $this->veterinariosHandler->getVeterinarioById($id);
+            $empleados  = $this->userHandler->getEmpleados();
+            $veterinario = Arr::first($empleados, fn($e) => $e['id'] === $id);
 
             if (!$veterinario) {
-                return redirect()->route('employees.index')->with('error', 'Empleado no encontrado.');
+                return redirect()->route('employees.index')
+                                 ->with('error', 'Empleado no encontrado.');
             }
-
             return view('employees.edit', compact('veterinario'));
         } catch (Exception $e) {
             return back()->with('error', 'Hubo un problema al cargar los datos del empleado.');
         }
     }
 
-    // Actualiza el empleado
-    public function update(Request $request, $id)
+    // Actualiza el empleado (solo datos en usuarios)
+    public function update(Request $request, int $id)
     {
         $request->validate([
-            'nombreCompleto' => 'required|string|max:255',
-            'fechaInicio'    => 'required|date',
+            'nombre_completo' => 'required|string|max:255',
             'telefono'       => 'required|string|max:50',
-            'especialidad'   => 'required|string|max:255',
             'email'          => 'required|email|unique:usuarios,email,' . $id . ',id',
         ]);
 
-        // Set the password to the email
-        $data = $request->only(['nombreCompleto', 'fechaInicio', 'telefono', 'especialidad', 'email']);
-        $data['password'] = $data['email'];
+        $v = $request->only(['nombre_completo', 'telefono', 'email']);
+        $v['password'] = $v['email'];
 
         try {
-            $veterinario = $this->veterinariosHandler->getVeterinarioById($id);
-
-            if (!$veterinario) {
-                return redirect()->route('employees.index')->with('error', 'Empleado no encontrado.');
-            }
-
-            // Update the user in the "usuarios" table
-            $this->userHandler->updateUsuario($veterinario['idusuario'], $data['email'], $data['password']);
-            $data['idUsuario'] = $veterinario['idusuario'];
-
-            // Update the veterinarian in the "veterinarios" table
-            $this->veterinariosHandler->updateVeterinario($id, $data);
-
-            return redirect()->route('employees.index')->with('success', 'Empleado actualizado exitosamente.');
+            $this->userHandler->updateUsuario(
+                $id,
+                $v['email'],
+                $v['password'],
+                'veterinario',
+                $v['nombre_completo'],
+                $v['telefono'],
+                0
+            );
+            return redirect()->route('employees.index')
+                             ->with('success', 'Empleado actualizado exitosamente.');
         } catch (Exception $e) {
-            return back()->with('error', 'Hubo un problema al actualizar el empleado. Por favor, inténtalo de nuevo.');
+            return back()->with('error', 'Hubo un problema al actualizar el empleado.');
         }
     }
 
-    // Elimina el empleado
-    public function destroy($id)
+    // Elimina el empleado (rol veterinario)
+    public function destroy(int $id)
     {
         try {
-            $veterinario = $this->veterinariosHandler->getVeterinarioById($id);
-
-            if (!$veterinario) {
-                return redirect()->route('employees.index')->with('error', 'Empleado no encontrado.');
-            }
-
-            // Delete the veterinarian from the "veterinarios" table
-            $this->veterinariosHandler->deleteVeterinario($id);
-
-            // Delete the user from the "usuarios" table
-            $this->userHandler->deleteUsuario($veterinario['idusuario']);
-
-            return redirect()->route('employees.index')->with('success', 'Empleado eliminado exitosamente.');
+            $this->userHandler->deleteUsuario($id);
+            return redirect()->route('employees.index')
+                             ->with('success', 'Empleado eliminado exitosamente.');
         } catch (Exception $e) {
-            return back()->with('error', 'Hubo un problema al eliminar el empleado. Por favor, inténtalo de nuevo.');
+            return back()->with('error', 'Hubo un problema al eliminar el empleado.');
         }
     }
 }

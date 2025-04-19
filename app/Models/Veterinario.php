@@ -8,10 +8,6 @@ class Veterinario extends Model
 {
     // Table name is "veterinarios"
     protected $fillable = [
-        'nombreCompleto',
-        'fechaInicio',
-        'telefono',
-        'especialidad',
         'idUsuario',
     ];
 

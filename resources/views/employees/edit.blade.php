@@ -22,35 +22,57 @@
             <form action="{{ route('employees.update', $veterinario->id ?? 0) }}" method="POST">
                 @csrf
                 @method('PUT')
+
                 <div class="mb-3">
-                    <label for="nombreCompleto" class="form-label">Nombre Completo</label>
-                    <input type="text" class="form-control" id="nombreCompleto" name="nombreCompleto" 
-                           value="{{ old('nombreCompleto', $veterinario->nombrecompleto ?? '') }}" 
-                           placeholder="Introduce el nombre completo" required>
+                    <label for="nombre_completo" class="form-label">Nombre Completo</label>
+                    <input type="text"
+                           class="form-control"
+                           id="nombre_completo"
+                           name="nombre_completo"
+                           value="{{ old('nombre_completo', $veterinario->nombre_completo ?? '') }}"
+                           placeholder="Introduce el nombre completo"
+                           required>
                 </div>
+
                 <div class="mb-3">
                     <label for="email" class="form-label">Correo Electrónico</label>
-                    <input type="email" class="form-control" id="email" name="email" 
-                           value="{{ old('email', $veterinario->email ?? '') }}" 
-                           placeholder="Introduce el correo electrónico" required>
+                    <input type="email"
+                           class="form-control"
+                           id="email"
+                           name="email"
+                           value="{{ old('email', $veterinario->email ?? '') }}"
+                           placeholder="Introduce el correo electrónico"
+                           required>
                 </div>
-                <div class="mb-3">
-                    <label for="fechaInicio" class="form-label">Fecha de Inicio</label>
-                    <input type="date" class="form-control" id="fechaInicio" name="fechaInicio" 
-                           value="{{ old('fechaInicio', $veterinario->fechainicio ?? '') }}" required>
-                </div>
+
                 <div class="mb-3">
                     <label for="telefono" class="form-label">Teléfono</label>
-                    <input type="text" class="form-control" id="telefono" name="telefono" 
-                           value="{{ old('telefono', $veterinario->telefono ?? '') }}" 
-                           placeholder="Introduce el teléfono" required>
+                    <input type="text"
+                           class="form-control"
+                           id="telefono"
+                           name="telefono"
+                           value="{{ old('telefono', $veterinario->telefono ?? '') }}"
+                           placeholder="Introduce el teléfono"
+                           required>
                 </div>
+
                 <div class="mb-3">
-                    <label for="especialidad" class="form-label">Especialidad</label>
-                    <input type="text" class="form-control" id="especialidad" name="especialidad" 
-                           value="{{ old('especialidad', $veterinario->especialidad ?? '') }}" 
-                           placeholder="Introduce la especialidad" required>
+                    <label for="rol" class="form-label">Rol</label>
+                    <select id="rol"
+                            name="rol"
+                            class="form-control"
+                            required>
+                        <option value="veterinario"
+                            {{ old('rol', $veterinario->rol ?? '') === 'veterinario' ? 'selected' : '' }}>
+                            Veterinario
+                        </option>
+                        <option value="administrador"
+                            {{ old('rol', $veterinario->rol ?? '') === 'administrador' ? 'selected' : '' }}>
+                            Administrador
+                        </option>
+                    </select>
                 </div>
+
                 <div class="text-center">
                     <button type="submit" class="btn btn-primary">Actualizar</button>
                     <a href="{{ route('employees.index') }}" class="btn btn-secondary ms-2">Cancelar</a>

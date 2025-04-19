@@ -22,11 +22,17 @@
     <header>
         <nav class="navbar navbar-expand-lg bg-body-tertiary">
             <div class="container-fluid">
-                <a class="navbar-brand" href="/">Logo</a>
-
+                <a class="navbar-brand" href="/">
+                    <img 
+                        src="/assets/images/logo.png" 
+                        alt="Logo" 
+                        class="d-inline-block align-text-top" 
+                        height="40"
+                    >
+                </a>
                 <div class="d-flex align-items-center d-lg-none">
                     @auth
-                        <span class="nav-link me-3">Bienvenido, {{ Auth::user()->name }}</span>
+                        <span class="nav-link me-3">Bienvenido, {{ Auth::user()->nombre_completo }}</span>
                         <form action="{{ route('logout') }}" method="POST" class="d-inline">
                             @csrf
                             <button type="submit" class="btn btn-link nav-link" style="text-decoration: none;">
@@ -46,7 +52,7 @@
                 <div class="collapse navbar-collapse" id="navbarNav">
                     <ul class="navbar-nav me-auto">
                         @auth
-                            @if(Auth::user()->role === 'cliente')
+                            @if(Auth::user()->rol === 'cliente')
                                 <li class="nav-item">
                                     <a class="nav-link" href="/appointments">Administrar Citas</a>
                                 </li>
@@ -56,7 +62,7 @@
                                 <li class="nav-item">
                                     <a class="nav-link" href="/reports">Generación Reportes</a>
                                 </li>
-                            @elseif(Auth::user()->role === 'veterinario')
+                            @elseif(Auth::user()->rol === 'veterinario')
                                 <li class="nav-item">
                                     <a class="nav-link" href="/employees">Administrar Empleados</a>
                                 </li>
@@ -83,7 +89,7 @@
                         <ul class="navbar-nav d-flex align-items-center">
                             @auth
                                 <li class="nav-item d-flex align-items-center">
-                                    <span class="nav-link me-3">Bienvenido, {{ Auth::user()->email }}</span>
+                                    <span class="nav-link me-3">Bienvenido, {{ Auth::user()->nombre_completo }}</span>
                                 </li>
                                 <li class="nav-item d-flex align-items-center">
                                     <form action="{{ route('logout') }}" method="POST" class="d-inline">

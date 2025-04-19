@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Handlers\UserHandler;
 use Exception;
+use Illuminate\Support\Facades\Log;
 
 class SignInController extends Controller
 {
@@ -25,23 +26,21 @@ class SignInController extends Controller
     public function register(Request $request)
     {
         $request->validate([
-            'name'       => 'required|string|max:255',
+            'nombre_completo'       => 'required|string|max:255',
             'email'      => 'required|email|unique:usuarios,email',
             'password'   => 'required|confirmed|min:6',
             'telefono'   => 'required|string|max:50',
             'direccion'  => 'required|string|max:255'
         ]);
 
-        // Confirmación de contraseña ya validada por Laravel
-        $data = $request->only(['name', 'email', 'password', 'telefono', 'direccion']);
+        $data = $request->only(['nombre_completo', 'email', 'password', 'telefono', 'direccion']);
 
         try {
-            // Registra el usuario y el cliente mediante el UserHandler
             $this->userHandler->registerClient($data);
 
-            return redirect('/login')->with('success', 'Usuario registrado con éxito. Ahora inicia sesión.');
+            return redirect('/login')
+                   ->with('success', 'Usuario registrado con éxito. Ahora inicia sesión.');
         } catch (Exception $e) {
-            // Maneja errores y muestra un mensaje al usuario
             return back()->with('error', 'Hubo un problema al registrar el usuario. Por favor, inténtalo de nuevo.');
         }
     }

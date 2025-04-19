@@ -4,15 +4,14 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Cliente extends Model
+class Administrador extends Model
 {
-    // Table name is "clientes" (default for model "Cliente")
+    // Table name is "administradores" (default for model "Administrador")
     protected $fillable = [
-        'direccion',
         'idUsuario',
     ];
 
-    // Relationship: A cliente belongs to a usuario
+    // Relationship: A administrador belongs to a usuario
     public function usuario()
     {
         return $this->belongsTo(Usuario::class, 'idUsuario');

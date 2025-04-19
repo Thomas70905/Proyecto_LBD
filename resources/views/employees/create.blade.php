@@ -21,31 +21,63 @@
 
             <form action="{{ route('employees.store') }}" method="POST">
                 @csrf
+
                 <div class="mb-3">
-                    <label for="nombreCompleto" class="form-label">Nombre Completo</label>
-                    <input type="text" class="form-control" id="nombreCompleto" name="nombreCompleto" 
-                           placeholder="Introduce el nombre completo" value="{{ old('nombreCompleto') }}" required>
+                    <label for="nombre_completo" class="form-label">Nombre Completo</label>
+                    <input
+                        type="text"
+                        class="form-control"
+                        id="nombre_completo"
+                        name="nombre_completo"
+                        placeholder="Introduce el nombre completo"
+                        value="{{ old('nombre_completo') }}"
+                        required
+                    >
                 </div>
+
                 <div class="mb-3">
                     <label for="email" class="form-label">Correo Electrónico</label>
-                    <input type="email" class="form-control" id="email" name="email" 
-                           placeholder="Introduce el correo electrónico" value="{{ old('email') }}" required>
+                    <input
+                        type="email"
+                        class="form-control"
+                        id="email"
+                        name="email"
+                        placeholder="Introduce el correo electrónico"
+                        value="{{ old('email') }}"
+                        required
+                    >
                 </div>
-                <div class="mb-3">
-                    <label for="fechaInicio" class="form-label">Fecha de Inicio</label>
-                    <input type="date" class="form-control" id="fechaInicio" name="fechaInicio" 
-                           value="{{ old('fechaInicio') }}" required>
-                </div>
+
                 <div class="mb-3">
                     <label for="telefono" class="form-label">Teléfono</label>
-                    <input type="text" class="form-control" id="telefono" name="telefono" 
-                           placeholder="Introduce el teléfono" value="{{ old('telefono') }}" required>
+                    <input
+                        type="text"
+                        class="form-control"
+                        id="telefono"
+                        name="telefono"
+                        placeholder="Introduce el teléfono"
+                        value="{{ old('telefono') }}"
+                        required
+                    >
                 </div>
+
                 <div class="mb-3">
-                    <label for="especialidad" class="form-label">Especialidad</label>
-                    <input type="text" class="form-control" id="especialidad" name="especialidad" 
-                           placeholder="Introduce la especialidad" value="{{ old('especialidad') }}" required>
+                    <label for="rol" class="form-label">Rol</label>
+                    <select
+                        id="rol"
+                        name="rol"
+                        class="form-control"
+                        required
+                    >
+                        <option value="veterinario" {{ old('rol') === 'veterinario' ? 'selected' : '' }}>
+                            Veterinario
+                        </option>
+                        <option value="administrador" {{ old('rol') === 'administrador' ? 'selected' : '' }}>
+                            Administrador
+                        </option>
+                    </select>
                 </div>
+
                 <div class="text-center">
                     <button type="submit" class="btn btn-primary">Guardar</button>
                     <a href="{{ route('employees.index') }}" class="btn btn-secondary ms-2">Cancelar</a>

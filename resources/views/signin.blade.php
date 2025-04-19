@@ -28,9 +28,9 @@
             <form action="{{ route('signin.register') }}" method="POST">
                 @csrf
                 <div class="mb-3">
-                    <label for="name" class="form-label">Nombre completo</label>
-                    <input type="text" class="form-control" id="name" name="name" 
-                           value="{{ old('name') }}" 
+                    <label for="nombre_completo" class="form-label">Nombre completo</label>
+                    <input type="text" class="form-control" id="nombre_completo" name="nombre_completo" 
+                           value="{{ old('nombre_completo') }}" 
                            placeholder="Introduce tu nombre completo" required>
                 </div>
                 <div class="mb-3">

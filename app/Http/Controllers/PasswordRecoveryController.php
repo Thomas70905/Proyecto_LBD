@@ -9,15 +9,47 @@ use Illuminate\Support\Facades\Auth;
 use App\Mail\ResetPasswordMail;
 use App\Handlers\UserHandler;
 
+/**
+ * Controlador PasswordRecoveryController
+ * 
+ * Este controlador maneja todas las operaciones relacionadas con la recuperación
+ * y restablecimiento de contraseñas en el sistema. Proporciona funcionalidades
+ * para solicitar la recuperación de contraseña, enviar enlaces de restablecimiento
+ * por correo electrónico y actualizar las contraseñas de los usuarios.
+ * 
+ * El controlador utiliza el UserHandler para interactuar con la base de datos
+ * y el sistema de correo electrónico de Laravel para enviar notificaciones.
+ * 
+ * @package App\Http\Controllers
+ */
 class PasswordRecoveryController extends Controller
 {
-    // Muestra el formulario de recuperación
+    /**
+     * Muestra el formulario de recuperación de contraseña
+     * 
+     * Este método muestra la vista que contiene el formulario para solicitar
+     * la recuperación de contraseña mediante correo electrónico.
+     * 
+     * @return \Illuminate\View\View Vista con el formulario de recuperación
+     */
     public function show()
     {
         return view('password_recovery');
     }
 
-    // Procesa el envío del enlace de restablecimiento
+    /**
+     * Procesa el envío del enlace de restablecimiento de contraseña
+     * 
+     * Este método valida el correo electrónico proporcionado, genera un token
+     * de recuperación, marca al usuario como en recuperación y envía un correo
+     * electrónico con las instrucciones para restablecer la contraseña.
+     * 
+     * @param \Illuminate\Http\Request $request Datos de la solicitud:
+     *                                         - email: Correo electrónico del usuario
+     * @return \Illuminate\Http\RedirectResponse Redirección con mensaje de estado
+     * 
+     * @throws \Illuminate\Validation\ValidationException Si la validación falla
+     */
     public function sendResetLink(Request $request)
     {
         $request->validate(['email' => 'required|email']);
@@ -41,13 +73,34 @@ class PasswordRecoveryController extends Controller
         );
     }
 
-    // Muestra el formulario para cambiar contraseña después de login
+    /**
+     * Muestra el formulario para cambiar la contraseña
+     * 
+     * Este método muestra la vista que contiene el formulario para establecer
+     * una nueva contraseña después de que el usuario ha iniciado sesión
+     * con credenciales temporales.
+     * 
+     * @return \Illuminate\View\View Vista con el formulario de cambio de contraseña
+     */
     public function showChangePassword()
     {
         return view('change_password');
     }
 
-    // Procesa la actualización de la nueva contraseña
+    /**
+     * Procesa la actualización de la contraseña
+     * 
+     * Este método valida y actualiza la contraseña del usuario actual,
+     * desactiva el estado de recuperación y cierra la sesión para que
+     * el usuario pueda iniciar sesión con su nueva contraseña.
+     * 
+     * @param \Illuminate\Http\Request $request Datos de la solicitud:
+     *                                         - password: Nueva contraseña
+     *                                         - password_confirmation: Confirmación
+     * @return \Illuminate\Http\RedirectResponse Redirección al inicio de sesión
+     * 
+     * @throws \Illuminate\Validation\ValidationException Si la validación falla
+     */
     public function updatePassword(Request $request)
     {
         $request->validate([

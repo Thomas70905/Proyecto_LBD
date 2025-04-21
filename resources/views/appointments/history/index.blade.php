@@ -62,34 +62,27 @@
     {{-- Contenedor de citas agrupadas por mascota --}}
     @forelse($appointments as $petName => $petAppointments)
         <div class="card mb-4">
-            {{-- Encabezado de la tarjeta con información de la mascota --}}
-            <div class="card-header bg-primary text-white">
-                <h5 class="mb-0">
-                    {{ $petName }}
-                    <small class="d-block">
-                        {{ $petAppointments[0]['especie'] }} - {{ $petAppointments[0]['raza'] }}
-                    </small>
-                </h5>
-            </div>
-
             {{-- Tabla de citas de la mascota --}}
             <div class="table-responsive">
                 <table class="table table-hover mb-0">
                     <thead>
                         <tr>
                             <th>Fecha</th>
+                            <th>Mascota</th>
                             <th>Servicio</th>
                             <th>Estado</th>
-                            <th>Total</th>
                             <th>Acciones</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach($petAppointments as $appointment)
+                        @foreach($appointments as $appointment)
                             <tr>
                                 {{-- Fecha de la cita --}}
                                 <td>{{ \Carbon\Carbon::parse($appointment['fechainicio'])->format('d/m/Y H:i') }}</td>
                                 
+                                {{-- Nombre de la mascota --}}
+                                <td>{{ $appointment['nombre_mascota'] }}</td>
+
                                 {{-- Nombre del servicio --}}
                                 <td>{{ $appointment['nombre_servicio'] }}</td>
                                 
@@ -108,15 +101,12 @@
                                     @endswitch
                                 </td>
                                 
-                                {{-- Total de la cita --}}
-                                <td>₡{{ number_format($appointment['total'], 2) }}</td>
-                                
                                 {{-- Botones de acción --}}
                                 <td>
                                     {{-- Botón para ver detalles --}}
                                     <a href="{{ route('appointment-history.show', $appointment['id']) }}" 
                                        class="btn btn-sm btn-primary">
-                                        <i class="fas fa-eye"></i> Ver
+                                        <i class="fas fa-eye"></i> Ver Detalles
                                     </a>
                                     
                                     {{-- Botón para descargar PDF (solo si asistió) --}}

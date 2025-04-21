@@ -3,6 +3,21 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
 
+/**
+ * Migración CreateAdministradoresTable
+ *
+ * Esta migración crea la tabla 'administradores' con las siguientes columnas:
+ * - id: NUMBER generado como identidad (PRIMARY KEY)
+ * - idUsuario: NUMBER NOT NULL (FOREIGN KEY a usuarios.id)
+ *
+ * Además, define los procedimientos almacenados:
+ * - ConsultarAdministradores: devuelve todos los administradores con datos de usuario
+ * - ConsultarAdministradorPorId: devuelve un administrador por ID
+ * - ActualizarAdministrador: actualiza el idUsuario de un administrador
+ * - EliminarAdministradorPorId: elimina un administrador por ID
+ * - EliminarAdministradorPorUsuarioId: elimina un administrador por usuario ID
+ * - InsertarAdministrador: inserta un administrador y retorna su ID
+ */
 return new class extends Migration {
     public function up(): void
     {

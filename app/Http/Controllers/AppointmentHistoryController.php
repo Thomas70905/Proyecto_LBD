@@ -7,50 +7,35 @@ use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\Pdf;
 
 /**
- * Controlador para la gestión del historial de citas de los clientes.
- * 
- * Este controlador maneja todas las operaciones relacionadas con el historial
- * de citas de los clientes, incluyendo:
- * 
- * 1. Visualización de citas:
- *    - Listado de citas agrupadas por mascota
- *    - Detalles específicos de cada cita
- *    - Información de facturación
- * 
- * 2. Funcionalidades:
- *    - Generación de PDFs de resumen
- *    - Cálculo de totales y subtotales
- *    - Gestión de productos utilizados
- * 
- * 3. Integración:
- *    - Interacción con AppointmentHandler
- *    - Generación de PDFs con DomPDF
- *    - Sistema de autenticación
- * 
- * Dependencias:
- * - AppointmentHandler: Para operaciones con citas
- * - Pdf: Para generación de documentos
- * 
+ * Controlador AppointmentHistoryController
+ *
+ * Este controlador gestiona el historial de citas de los clientes autenticados.
+ * Proporciona funcionalidades para:
+ *   - Listar citas agrupadas por mascota y ordenadas por fecha.
+ *   - Mostrar detalles de una cita específica junto con el cálculo de facturación.
+ *   - Generar y descargar un PDF resumen de la cita.
+ *
+ * Se integra con:
+ *   - AppointmentHandler: para obtener datos de citas y productos utilizados.
+ *   - DomPDF (Pdf): para generación de documentos PDF.
+ *
  * @package App\Http\Controllers
  */
 class AppointmentHistoryController extends Controller
 {
     /**
-     * Instancia del manejador de citas.
-     * 
-     * Se utiliza para realizar todas las operaciones relacionadas
-     * con las citas en la base de datos.
-     * 
-     * @var AppointmentHandler
+     * @var AppointmentHandler Instancia del manejador de citas
+     *
+     * Utilizada para realizar operaciones de lectura sobre citas y productos asociados.
      */
     protected $appointmentHandler;
 
     /**
      * Constructor del controlador.
-     * 
-     * Inicializa el controlador con una instancia del manejador de citas.
-     * 
-     * @param AppointmentHandler $appointmentHandler Instancia del manejador
+     *
+     * Inicializa la dependencia del manejador de citas.
+     *
+     * @param AppointmentHandler $appointmentHandler Manejador de operaciones de citas
      */
     public function __construct(AppointmentHandler $appointmentHandler)
     {
@@ -58,21 +43,14 @@ class AppointmentHistoryController extends Controller
     }
 
     /**
-     * Muestra el listado de citas del usuario autenticado.
-     * 
+     * Muestra el historial de citas del usuario autenticado.
+     *
      * Este método:
-     * 1. Obtiene todas las citas del usuario
-     * 2. Las agrupa por mascota
-     * 3. Ordena las citas por fecha
-     * 4. Retorna la vista con los datos
-     * 
-     * La vista muestra:
-     * - Listado de mascotas
-     * - Citas asociadas a cada mascota
-     * - Estado de cada cita
-     * - Acciones disponibles
-     * 
-     * @return \Illuminate\View\View Vista del listado de citas
+     *   1. Obtiene todas las citas del usuario con detalles.
+     *   2. Agrupa y ordena las citas por nombre de mascota y fecha.
+     *   3. Retorna la vista con el conjunto de datos.
+     *
+     * @return \Illuminate\View\View Vista con el listado de citas históricas
      */
     public function index()
     {
@@ -95,21 +73,16 @@ class AppointmentHistoryController extends Controller
 
     /**
      * Muestra los detalles de una cita específica.
-     * 
+     *
      * Este método:
-     * 1. Obtiene los detalles de la cita
-     * 2. Recupera los productos utilizados
-     * 3. Calcula los totales de facturación
-     * 4. Retorna la vista con los datos
-     * 
-     * La vista muestra:
-     * - Información general de la cita
-     * - Detalles del servicio
-     * - Productos utilizados
-     * - Resumen de facturación
-     * 
+     *   1. Obtiene los datos de la cita seleccionada.
+     *   2. Recupera los productos utilizados en la cita.
+     *   3. Calcula subtotales, impuesto (13%) y total.
+     *   4. Retorna la vista con la información completa de facturación.
+     *
      * @param int $id ID de la cita a mostrar
      * @return \Illuminate\View\View|\Illuminate\Http\RedirectResponse
+     *         Vista de detalles o redirección si la cita no existe
      */
     public function show($id)
     {
@@ -121,7 +94,6 @@ class AppointmentHistoryController extends Controller
                            ->with('error', 'Cita no encontrada');
         }
 
-        // Calculate billing totals
         $servicePrice = $appointment['precio_servicio'] ?? 0;
         $productsTotal = 0;
 
@@ -131,7 +103,7 @@ class AppointmentHistoryController extends Controller
         }
 
         $subtotal = $servicePrice + $productsTotal;
-        $iva = $subtotal * 0.13; // 13% tax
+        $iva = $subtotal * 0.13; 
         $total = $subtotal + $iva;
 
         return view('appointments.history.show', compact(
@@ -147,21 +119,14 @@ class AppointmentHistoryController extends Controller
 
     /**
      * Genera y descarga un PDF con el resumen de la cita.
-     * 
+     *
      * Este método:
-     * 1. Obtiene los detalles de la cita
-     * 2. Recupera los productos utilizados
-     * 3. Calcula los totales
-     * 4. Genera el PDF
-     * 5. Retorna el archivo para descarga
-     * 
-     * El PDF incluye:
-     * - Información de la cita
-     * - Detalles del servicio
-     * - Lista de productos
-     * - Resumen de facturación
-     * 
-     * @param int $id ID de la cita
+     *   1. Obtiene los datos de la cita y productos asociados.
+     *   2. Calcula los totales de facturación.
+     *   3. Renderiza la vista 'appointments.history.pdf'.
+     *   4. Devuelve la respuesta con el archivo PDF para descarga.
+     *
+     * @param int $id ID de la cita a exportar
      * @return \Illuminate\Http\Response|\Illuminate\Http\RedirectResponse
      */
     public function downloadPdf($id)
@@ -174,7 +139,6 @@ class AppointmentHistoryController extends Controller
                            ->with('error', 'Cita no encontrada');
         }
 
-        // Calculate billing totals
         $servicePrice = $appointment['precio_servicio'] ?? 0;
         $productsTotal = 0;
 
@@ -184,7 +148,7 @@ class AppointmentHistoryController extends Controller
         }
 
         $subtotal = $servicePrice + $productsTotal;
-        $iva = $subtotal * 0.13; // 13% tax
+        $iva = $subtotal * 0.13;
         $total = $subtotal + $iva;
 
         $pdf = Pdf::loadView('appointments.history.pdf', compact(

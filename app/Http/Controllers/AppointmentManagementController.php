@@ -7,11 +7,38 @@ use App\Handlers\AppointmentHandler;
 use App\Handlers\InventoryHandler;
 use Illuminate\Support\Facades\DB;
 
+/**
+ * Controlador AppointmentManagementController
+ * 
+ * Este controlador maneja la gestión detallada de las citas en el sistema.
+ * Proporciona funcionalidades para ver, actualizar y gestionar los productos
+ * utilizados en las citas, así como el cálculo de facturación.
+ * 
+ * El controlador utiliza handlers para interactuar con la base de datos y
+ * gestionar la información relacionada con las citas y el inventario.
+ * 
+ * @package App\Http\Controllers
+ */
 class AppointmentManagementController extends Controller
 {
+    /**
+     * @var AppointmentHandler Instancia del manejador de citas
+     */
     protected $appointmentHandler;
+
+    /**
+     * @var InventoryHandler Instancia del manejador de inventario
+     */
     protected $inventoryHandler;
 
+    /**
+     * Constructor del controlador
+     * 
+     * Inicializa las dependencias necesarias para el funcionamiento del controlador.
+     * 
+     * @param AppointmentHandler $appointmentHandler Manejador de citas
+     * @param InventoryHandler $inventoryHandler Manejador de inventario
+     */
     public function __construct(
         AppointmentHandler $appointmentHandler,
         InventoryHandler $inventoryHandler
@@ -20,14 +47,32 @@ class AppointmentManagementController extends Controller
         $this->inventoryHandler = $inventoryHandler;
     }
 
-    // Muestra la lista de citas con detalles
+    /**
+     * Muestra la lista de citas con detalles
+     * 
+     * Este método obtiene todas las citas del sistema con sus detalles asociados
+     * y las muestra en la vista correspondiente.
+     * 
+     * @return \Illuminate\View\View Vista con la lista de citas y sus detalles
+     */
     public function index()
     {
         $appointments = $this->appointmentHandler->getAllAppointmentsWithDetails();
         return view('appointments.management.index', compact('appointments'));
     }
 
-    // Muestra los detalles de una cita específica
+    /**
+     * Muestra los detalles de una cita específica
+     * 
+     * Este método obtiene los detalles completos de una cita, incluyendo:
+     * - Información de la cita
+     * - Productos utilizados
+     * - Cálculos de facturación (subtotal, IVA, total)
+     * 
+     * @param int $id ID de la cita a mostrar
+     * @return \Illuminate\View\View|\Illuminate\Http\RedirectResponse
+     *         Vista con los detalles de la cita o redirección si no se encuentra
+     */
     public function show($id)
     {
         $appointment = $this->appointmentHandler->getAppointmentWithDetailsById($id);
@@ -39,7 +84,6 @@ class AppointmentManagementController extends Controller
                            ->with('error', 'Cita no encontrada');
         }
 
-        // Calculate billing totals
         $servicePrice = $appointment['precio_servicio'] ?? 0;
         $productsTotal = 0;
 
@@ -49,7 +93,7 @@ class AppointmentManagementController extends Controller
         }
 
         $subtotal = $servicePrice + $productsTotal;
-        $iva = $subtotal * 0.13; // 13% tax
+        $iva = $subtotal * 0.13; // 13% impuesto
         $total = $subtotal + $iva;
 
         return view('appointments.management.show', compact(
@@ -64,7 +108,22 @@ class AppointmentManagementController extends Controller
         ));
     }
 
-    // Actualiza la asistencia de una cita
+    /**
+     * Actualiza el estado de asistencia de una cita
+     * 
+     * Este método actualiza el estado de asistencia de una cita específica.
+     * Los valores posibles son:
+     * - -1: Pendiente
+     * - 0: No asistió
+     * - 1: Asistió
+     * 
+     * @param \Illuminate\Http\Request $request Datos de la solicitud:
+     *                                         - asistencia: Nuevo estado de asistencia
+     * @param int $id ID de la cita a actualizar
+     * @return \Illuminate\Http\RedirectResponse Redirección con mensaje de éxito o error
+     * 
+     * @throws \Illuminate\Validation\ValidationException Si la validación falla
+     */
     public function updateAttendance(Request $request, $id)
     {
         $request->validate([
@@ -73,13 +132,26 @@ class AppointmentManagementController extends Controller
 
         try {            
             $this->appointmentHandler->updateAppointmentAttendance($id, (int)$request->asistencia);
-                        return redirect()->back()->with('success', 'Estado de asistencia actualizado correctamente');
+            return redirect()->back()->with('success', 'Estado de asistencia actualizado correctamente');
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Error al actualizar el estado de asistencia');
         }
     }
 
-    // Agrega un producto a la cita
+    /**
+     * Agrega un producto a una cita
+     * 
+     * Este método agrega un producto del inventario a una cita específica,
+     * verificando la disponibilidad de unidades antes de realizar la operación.
+     * 
+     * @param \Illuminate\Http\Request $request Datos de la solicitud:
+     *                                         - producto_id: ID del producto
+     *                                         - cantidad: Cantidad a agregar
+     * @param int $id ID de la cita
+     * @return \Illuminate\Http\RedirectResponse Redirección con mensaje de éxito o error
+     * 
+     * @throws \Illuminate\Validation\ValidationException Si la validación falla
+     */
     public function addProduct(Request $request, $id)
     {
         try {
@@ -109,6 +181,20 @@ class AppointmentManagementController extends Controller
         }
     }
 
+    /**
+     * Actualiza la cantidad de un producto en una cita
+     * 
+     * Este método actualiza la cantidad de un producto específico en una cita,
+     * verificando la disponibilidad de unidades antes de realizar la operación.
+     * 
+     * @param \Illuminate\Http\Request $request Datos de la solicitud:
+     *                                         - producto_id: ID del producto
+     *                                         - cantidad: Nueva cantidad
+     * @param int $id ID de la cita
+     * @return \Illuminate\Http\RedirectResponse Redirección con mensaje de éxito o error
+     * 
+     * @throws \Illuminate\Validation\ValidationException Si la validación falla
+     */
     public function updateProductQuantity(Request $request, $id)
     {
         try {
@@ -156,6 +242,18 @@ class AppointmentManagementController extends Controller
         }
     }
 
+    /**
+     * Elimina un producto de una cita
+     * 
+     * Este método elimina un producto específico de una cita.
+     * 
+     * @param \Illuminate\Http\Request $request Datos de la solicitud:
+     *                                         - producto_id: ID del producto a eliminar
+     * @param int $id ID de la cita
+     * @return \Illuminate\Http\RedirectResponse Redirección con mensaje de éxito o error
+     * 
+     * @throws \Illuminate\Validation\ValidationException Si la validación falla
+     */
     public function removeProduct(Request $request, $id)
     {
         try {

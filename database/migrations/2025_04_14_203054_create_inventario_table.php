@@ -3,6 +3,22 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
 
+/**
+ * Migración CreateInventarioTable
+ *
+ * Esta migración crea la tabla 'inventario' con las siguientes columnas:
+ * - id: NUMBER generado como identidad (PRIMARY KEY)
+ * - nombreProducto: VARCHAR2(255) NOT NULL
+ * - descripcion: CLOB NOT NULL
+ * - precio: NUMBER(10,2) NOT NULL
+ * - cantidadUnidades: NUMBER NOT NULL
+ * - fechaCaducidad: DATE NOT NULL
+ *
+ * Define los procedimientos almacenados para CRUD:
+ * - ConsultarInventario, ConsultarInventarioPorId
+ * - ActualizarInventario, EliminarInventarioPorId
+ * - InsertarInventario
+ */
 return new class extends Migration {
     public function up(): void
     {

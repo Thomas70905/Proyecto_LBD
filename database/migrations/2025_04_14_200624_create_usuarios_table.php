@@ -3,6 +3,28 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
 
+/**
+ * Migración CreateUsuariosTable
+ *
+ * Esta migración crea la tabla 'usuarios' con las siguientes columnas:
+ * - id: NUMBER generado como identidad (PRIMARY KEY)
+ * - email: VARCHAR2(255) NOT NULL UNIQUE
+ * - password: VARCHAR2(255) NOT NULL
+ * - rol: VARCHAR2(50) NOT NULL
+ * - nombre_completo: VARCHAR2(255) NOT NULL
+ * - telefono: VARCHAR2(50) NULL
+ * - en_recuperacion: NUMBER(1) NOT NULL DEFAULT 0
+ *
+ * Además, define los procedimientos almacenados:
+ * - ConsultarUsuarios: devuelve todos los usuarios
+ * - ConsultarUsuarioPorId: devuelve un usuario por ID
+ * - ConsultarUsuarioPorCorreo: devuelve un usuario por correo
+ * - ConsultarEmpleados: devuelve usuarios con rol veterinario o administrador
+ * - ActualizarUsuario: actualiza datos de un usuario
+ * - EliminarUsuarioPorId: elimina un usuario por ID
+ * - InsertarUsuario: inserta un nuevo usuario y retorna su ID
+ * - MarcarUsuarioRecuperacionContrasenaPorCorreo: marca al usuario en recuperación y actualiza contraseña temporal
+ */
 return new class extends Migration {
     public function up(): void
     {

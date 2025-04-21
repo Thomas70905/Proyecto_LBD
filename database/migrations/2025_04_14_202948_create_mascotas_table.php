@@ -2,6 +2,26 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
 
+/**
+ * Migración CreateMascotasTable
+ *
+ * Esta migración crea la tabla 'mascotas' con las siguientes columnas:
+ * - id: NUMBER generado como identidad (PRIMARY KEY)
+ * - nombre_completo: VARCHAR2(255) NOT NULL
+ * - edad: NUMBER NOT NULL
+ * - peso: NUMBER(5,2) NOT NULL
+ * - raza: VARCHAR2(255) NOT NULL
+ * - especie: VARCHAR2(255) NOT NULL
+ * - idCliente: NUMBER NOT NULL (FOREIGN KEY a clientes(id))
+ *
+ * Define los procedimientos almacenados:
+ * - ConsultarMascotas: devuelve todas las mascotas
+ * - ConsultarMascotaPorId: devuelve una mascota por ID
+ * - ConsultarMascotasPorUsuarioId: devuelve mascotas por ID de usuario
+ * - ActualizarMascota: actualiza datos de una mascota
+ * - EliminarMascotaPorId: elimina una mascota por ID
+ * - InsertarMascota: inserta una mascota y retorna su ID
+ */
 return new class extends Migration {
     public function up(): void
     {
@@ -102,6 +122,6 @@ return new class extends Migration {
         DB::unprepared("DROP PROCEDURE ActualizarMascota");
         DB::unprepared("DROP PROCEDURE EliminarMascotaPorId");
         DB::unprepared("DROP PROCEDURE InsertarMascota");
-        DB::unprepared("DROP TABLE mascotas CASCADE CONSTRAINTS PURGE");
+        DB::unprepared("DROP TABLE mascotas");
     }
 };

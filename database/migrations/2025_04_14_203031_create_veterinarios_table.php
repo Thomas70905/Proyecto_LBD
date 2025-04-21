@@ -3,6 +3,21 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
 
+/**
+ * Migración CreateVeterinariosTable
+ *
+ * Esta migración crea la tabla 'veterinarios' con las siguientes columnas:
+ * - id: NUMBER generado como identidad (PRIMARY KEY)
+ * - idUsuario: NUMBER NOT NULL (FOREIGN KEY a usuarios.id)
+ *
+ * Además define los procedimientos almacenados:
+ * - ConsultarVeterinarios: devuelve todos los veterinarios con datos de usuario
+ * - ConsultarVeterinarioPorId: devuelve un veterinario por ID
+ * - ActualizarVeterinario: actualiza el idUsuario de un veterinario
+ * - EliminarVeterinarioPorId: elimina un veterinario por ID
+ * - EliminarVeterinarioPorUsuarioId: elimina un veterinario por usuario ID
+ * - InsertarVeterinario: inserta un veterinario y retorna su ID
+ */
 return new class extends Migration {
     public function up(): void
     {

@@ -4,6 +4,20 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
+/**
+ * Migración CreateSessionsTable
+ *
+ * Esta migración crea la tabla 'sessions' para almacenar las sesiones de los usuarios,
+ * con las siguientes columnas:
+ * - id: identificador de sesión (PRIMARY KEY)
+ * - user_id: referencia al usuario (FOREIGN KEY), nullable e indexado
+ * - ip_address: dirección IP del cliente, nullable
+ * - user_agent: información del agente de usuario, nullable
+ * - payload: datos serializados de la sesión
+ * - last_activity: timestamp de la última actividad, indexado
+ *
+ * Utiliza el constructor de esquema de Laravel (Blueprint).
+ */
 return new class extends Migration
 {
     /**

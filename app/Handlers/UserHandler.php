@@ -4,17 +4,56 @@ namespace App\Handlers;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
+/**
+ * Clase UserHandler
+ * 
+ * Esta clase maneja todas las operaciones relacionadas con los usuarios en el sistema.
+ * Proporciona métodos para gestionar usuarios, clientes, veterinarios y administradores,
+ * incluyendo operaciones de registro, actualización, consulta y eliminación.
+ * 
+ * La clase utiliza procedimientos almacenados en la base de datos para realizar
+ * todas las operaciones, asegurando la integridad y consistencia de los datos.
+ * 
+ * @package App\Handlers
+ */
 class UserHandler
 {
+    /**
+     * @var \PDO Instancia de conexión a la base de datos
+     * 
+     * Esta propiedad mantiene la conexión activa con la base de datos
+     * y es utilizada por todos los métodos de la clase para ejecutar
+     * las consultas SQL necesarias.
+     */
     protected \PDO $pdo;
 
+    /**
+     * Constructor de la clase
+     * 
+     * Inicializa la conexión a la base de datos utilizando la instancia PDO de Laravel.
+     * Esta conexión se utiliza para todas las operaciones de base de datos
+     * realizadas por los métodos de la clase.
+     */
     public function __construct()
     {
         $this->pdo = DB::getPdo();
     }
 
     /**
-     * Llama al SP updateUsuario para modificar email, password y estado de recuperación.
+     * Actualiza la información de un usuario existente
+     * 
+     * Este método ejecuta el procedimiento almacenado 'ActualizarUsuario' para modificar
+     * los datos de un usuario específico.
+     * 
+     * @param int $id ID del usuario a actualizar
+     * @param string $email Nuevo correo electrónico
+     * @param string $password Nueva contraseña (sin hash)
+     * @param string $rol Nuevo rol del usuario
+     * @param string $nombre_completo Nuevo nombre completo
+     * @param string $telefono Nuevo número de teléfono
+     * @param int $enRecuperacion Estado de recuperación de contraseña (0 o 1)
+     * 
+     * @throws \PDOException Si ocurre un error al ejecutar la consulta
      */
     public function updateUsuario(
         int    $id,
@@ -50,7 +89,20 @@ class UserHandler
     }
 
     /**
-     * Inserta un usuario y devuelve su id.
+     * Inserta un nuevo usuario en el sistema
+     * 
+     * Este método ejecuta el procedimiento almacenado 'InsertarUsuario' para crear
+     * un nuevo usuario con toda su información.
+     * 
+     * @param string $email Correo electrónico del usuario
+     * @param string $password Contraseña sin hash
+     * @param string $role Rol del usuario
+     * @param string $nombre_completo Nombre completo
+     * @param string $telefono Número de teléfono
+     * @param int $enRecuperacion Estado de recuperación (0 por defecto)
+     * @return int ID del usuario creado
+     * 
+     * @throws \PDOException Si ocurre un error al ejecutar la consulta
      */
     protected function insertUsuario(
         string $email,
@@ -90,7 +142,18 @@ class UserHandler
         return $userId;
     }
 
-    // Inserta datos de cliente en "clientes" y devuelve su id
+    /**
+     * Inserta un nuevo cliente en el sistema
+     * 
+     * Este método ejecuta el procedimiento almacenado 'InsertarCliente' para crear
+     * un nuevo cliente asociado a un usuario existente.
+     * 
+     * @param string $direccion Dirección del cliente
+     * @param int $userId ID del usuario asociado
+     * @return int ID del cliente creado
+     * 
+     * @throws \PDOException Si ocurre un error al ejecutar la consulta
+     */
     protected function insertCliente(string $direccion, int $userId): int
     {
         $sql = "
@@ -113,7 +176,17 @@ class UserHandler
         return $clientId;
     }
 
-    // Inserta datos del veterinario en "veterinarios" y devuelve su id
+    /**
+     * Inserta un nuevo veterinario en el sistema
+     * 
+     * Este método ejecuta el procedimiento almacenado 'InsertarVeterinario' para crear
+     * un nuevo veterinario asociado a un usuario existente.
+     * 
+     * @param int $userId ID del usuario asociado
+     * @return int ID del veterinario creado
+     * 
+     * @throws \PDOException Si ocurre un error al ejecutar la consulta
+     */
     protected function insertVeterinario(int $userId): int
     {
         $sql = "
@@ -134,7 +207,17 @@ class UserHandler
         return $vetId;
     }
 
-    // Inserta datos del administrador en "administradores" y devuelve su id
+    /**
+     * Inserta un nuevo administrador en el sistema
+     * 
+     * Este método ejecuta el procedimiento almacenado 'InsertarAdministrador' para crear
+     * un nuevo administrador asociado a un usuario existente.
+     * 
+     * @param int $userId ID del usuario asociado
+     * @return int ID del administrador creado
+     * 
+     * @throws \PDOException Si ocurre un error al ejecutar la consulta
+     */
     protected function insertAdministrador(int $userId): int
     {
         $sql = "
@@ -155,7 +238,24 @@ class UserHandler
         return $adminId;
     }
 
-    // Registro completo de un cliente
+    /**
+     * Registra un nuevo cliente en el sistema
+     * 
+     * Este método realiza el registro completo de un cliente, creando tanto el usuario
+     * como el registro de cliente asociado.
+     * 
+     * @param array $data Datos del cliente:
+     *                    - email: Correo electrónico
+     *                    - password: Contraseña
+     *                    - nombre_completo: Nombre completo
+     *                    - telefono: Número de teléfono
+     *                    - direccion: Dirección
+     * @return array Resultado del registro:
+     *               - user_id: ID del usuario creado
+     *               - client_id: ID del cliente creado
+     * 
+     * @throws \PDOException Si ocurre un error al ejecutar la consulta
+     */
     public function registerClient(array $data): array
     {
         $userId   = $this->insertUsuario(
@@ -173,7 +273,23 @@ class UserHandler
         ];
     }
 
-    // Registro completo
+    /**
+     * Registra un nuevo veterinario en el sistema
+     * 
+     * Este método realiza el registro completo de un veterinario, creando tanto el usuario
+     * como el registro de veterinario asociado.
+     * 
+     * @param array $data Datos del veterinario:
+     *                    - email: Correo electrónico
+     *                    - password: Contraseña
+     *                    - nombre_completo: Nombre completo
+     *                    - telefono: Número de teléfono
+     * @return array Resultado del registro:
+     *               - user_id: ID del usuario creado
+     *               - veterinario_id: ID del veterinario creado
+     * 
+     * @throws \PDOException Si ocurre un error al ejecutar la consulta
+     */
     public function registerVeterinario(array $data): array
     {
         $userId        = $this->insertUsuario(
@@ -191,7 +307,23 @@ class UserHandler
         ];
     }
 
-    // Registro completo de un administrador
+    /**
+     * Registra un nuevo administrador en el sistema
+     * 
+     * Este método realiza el registro completo de un administrador, creando tanto el usuario
+     * como el registro de administrador asociado.
+     * 
+     * @param array $data Datos del administrador:
+     *                    - email: Correo electrónico
+     *                    - password: Contraseña
+     *                    - nombre_completo: Nombre completo
+     *                    - telefono: Número de teléfono
+     * @return array Resultado del registro:
+     *               - user_id: ID del usuario creado
+     *               - admin_id: ID del administrador creado
+     * 
+     * @throws \PDOException Si ocurre un error al ejecutar la consulta
+     */
     public function registerAdministrador(array $data): array
     {
         $userId  = $this->insertUsuario(
@@ -210,8 +342,19 @@ class UserHandler
     }
 
     /**
-     * Obtiene todos los empleados (veterinarios y administradores)
-     * usando el SP ConsultarEmpleados.
+     * Obtiene todos los empleados del sistema
+     * 
+     * Este método ejecuta el procedimiento almacenado 'ConsultarEmpleados' para obtener
+     * una lista de todos los empleados (veterinarios y administradores) registrados.
+     * 
+     * @return array Lista de empleados, cada uno incluye:
+     *               - ID del empleado
+     *               - Nombre completo
+     *               - Correo electrónico
+     *               - Teléfono
+     *               - Rol
+     * 
+     * @throws \PDOException Si ocurre un error al ejecutar la consulta
      */
     public function getEmpleados(): array
     {
@@ -234,9 +377,20 @@ class UserHandler
         return $empleados;
     }
 
+    /**
+     * Obtiene un usuario por su correo electrónico
+     * 
+     * Este método ejecuta el procedimiento almacenado 'ConsultarUsuarioPorCorreo' para
+     * obtener los datos de un usuario específico.
+     * 
+     * @param string $email Correo electrónico del usuario
+     * @return array|null Datos del usuario si existe, null si no se encuentra
+     * 
+     * @throws \PDOException Si ocurre un error al ejecutar la consulta
+     */
     public function getUsuarioPorCorreo(string $email): ?array
     {
-        $sql  = "BEGIN ConsultarUsuarioPorEmail(:p_email, :cursor); END;";
+        $sql  = "BEGIN ConsultarUsuarioPorCorreo(:p_email, :cursor); END;";
         $stmt = $this->pdo->prepare($sql);
 
         $cursor = null;
@@ -254,6 +408,17 @@ class UserHandler
             : null;
     }
 
+    /**
+     * Obtiene un usuario por su ID
+     * 
+     * Este método ejecuta el procedimiento almacenado 'ConsultarUsuarioPorId' para
+     * obtener los datos de un usuario específico.
+     * 
+     * @param int $id ID del usuario
+     * @return array|null Datos del usuario si existe, null si no se encuentra
+     * 
+     * @throws \PDOException Si ocurre un error al ejecutar la consulta
+     */
     public function getUsuarioPorId(int $id): ?array
     {
         $sql = "BEGIN ConsultarUsuarioPorId(:p_id, :cursor); END;";
@@ -275,6 +440,17 @@ class UserHandler
         return $usuario ? array_change_key_case($usuario, CASE_LOWER) : null;
     }
 
+    /**
+     * Obtiene el ID de cliente asociado a un ID de usuario
+     * 
+     * Este método ejecuta el procedimiento almacenado 'ConsultarClienteIdPorIdUsuario'
+     * para obtener el ID de cliente asociado a un usuario específico.
+     * 
+     * @param int $idUsuario ID del usuario
+     * @return int|null ID del cliente si existe, null si no se encuentra
+     * 
+     * @throws \PDOException Si ocurre un error al ejecutar la consulta
+     */
     public function getClienteIdPorUsuarioId(int $idUsuario): ?int
     {
         $sql  = "BEGIN ConsultarClienteIdPorIdUsuario(:p_idUsuario, :p_id); END;";
@@ -291,7 +467,14 @@ class UserHandler
     }
 
     /**
-     * Elimina un usuario llamando al SP EliminarUsuarioPorId.
+     * Elimina un usuario del sistema
+     * 
+     * Este método ejecuta el procedimiento almacenado 'EliminarUsuarioPorId' para
+     * eliminar un usuario y todos sus registros asociados.
+     * 
+     * @param int $id ID del usuario a eliminar
+     * 
+     * @throws \PDOException Si ocurre un error al ejecutar la consulta
      */
     public function deleteUsuario(int $id): void
     {
@@ -306,7 +489,14 @@ class UserHandler
     }
 
     /**
-     * Elimina un registro de veterinario usando el SP EliminarVeterinarioPorUsuarioId.
+     * Elimina un veterinario por su ID de usuario
+     * 
+     * Este método ejecuta el procedimiento almacenado 'EliminarVeterinarioPorUsuarioId'
+     * para eliminar un registro de veterinario específico.
+     * 
+     * @param int $userId ID del usuario asociado al veterinario
+     * 
+     * @throws \PDOException Si ocurre un error al ejecutar la consulta
      */
     public function deleteVeterinarioPorUsuarioId(int $userId): void
     {
@@ -321,7 +511,14 @@ class UserHandler
     }
 
     /**
-     * Elimina un registro de administrador usando el SP EliminarAdministradorPorUsuarioId.
+     * Elimina un administrador por su ID de usuario
+     * 
+     * Este método ejecuta el procedimiento almacenado 'EliminarAdministradorPorUsuarioId'
+     * para eliminar un registro de administrador específico.
+     * 
+     * @param int $userId ID del usuario asociado al administrador
+     * 
+     * @throws \PDOException Si ocurre un error al ejecutar la consulta
      */
     public function deleteAdministradorPorUsuarioId(int $userId): void
     {
@@ -335,6 +532,17 @@ class UserHandler
         $stmt->execute();
     }
 
+    /**
+     * Marca un usuario para recuperación de contraseña
+     * 
+     * Este método ejecuta el procedimiento almacenado 'MarcarUsuarioRecuperacionContrasenaPorCorreo'
+     * para marcar un usuario como en proceso de recuperación de contraseña.
+     * 
+     * @param string $email Correo electrónico del usuario
+     * @param string $tempPassword Contraseña temporal
+     * 
+     * @throws \PDOException Si ocurre un error al ejecutar la consulta
+     */
     public function marcarUsuarioRecuperacion(string $email, string $tempPassword): void
     {
         $sql = "

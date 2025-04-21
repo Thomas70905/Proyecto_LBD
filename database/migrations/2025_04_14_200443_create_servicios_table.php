@@ -3,6 +3,23 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
 
+/**
+ * Migración CreateServiciosTable
+ *
+ * Esta migración crea la tabla 'servicios' con las siguientes columnas:
+ * - id: NUMBER generado como identidad (PRIMARY KEY)
+ * - nombre: VARCHAR2(255) NOT NULL
+ * - descripcion: CLOB NOT NULL
+ * - precio: NUMBER(10,2) NOT NULL
+ * - duracion: NUMBER NOT NULL
+ *
+ * Además, define los procedimientos almacenados:
+ * - ConsultarServicios: devuelve todos los servicios
+ * - ConsultarServicioPorId: devuelve un servicio por su ID
+ * - ActualizarServicio: actualiza los datos de un servicio
+ * - EliminarServicioPorId: elimina un servicio por su ID
+ * - InsertarServicio: inserta un nuevo servicio y retorna su ID
+ */
 return new class extends Migration {
     public function up(): void
     {

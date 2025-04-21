@@ -3,15 +3,8 @@
 @section('title', 'Detalles de Cita')
 
 @section('content')
-<div class="container">
-    <div class="row justify-content-center">
-        <div class="col-md-12">
-            <div class="card">
-                <div class="card-header">
-                    <h3 class="card-title">Detalles de Cita</h3>
-                </div>
-
-                <div class="card-body">
+<div class="container py-4">
+    <div class="card-body">
                     @if(session('success'))
                         <div class="alert alert-success">
                             {{ session('success') }}
@@ -198,11 +191,11 @@
                                                                         @csrf
                                                                         <input type="hidden" name="producto_id" value="{{ $product['inventarioid'] }}">
                                                                         <input type="number" 
-                                                                               name="cantidad" 
-                                                                               value="{{ $product['cantidad'] }}" 
-                                                                               min="0" 
-                                                                               class="form-control form-control-sm text-center" 
-                                                                               style="width: 80px;">
+                                                                            name="cantidad" 
+                                                                            value="{{ $product['cantidad'] }}" 
+                                                                            min="0" 
+                                                                            class="form-control form-control-sm text-center" 
+                                                                            style="width: 80px;">
                                                                         <button type="submit" class="btn btn-sm btn-primary">
                                                                             <i class="fas fa-save"></i>
                                                                         </button>
@@ -265,19 +258,4 @@
         </div>
     </div>
 </div>
-
-@push('scripts')
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const productSelect = document.getElementById('producto_id');
-        const cantidadInput = document.getElementById('cantidad');
-
-        productSelect.addEventListener('change', function() {
-            const selectedOption = this.options[this.selectedIndex];
-            const stock = parseInt(selectedOption.dataset.stock);
-            cantidadInput.max = stock;
-        });
-    });
-</script>
-@endpush
 @endsection 

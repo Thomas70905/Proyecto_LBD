@@ -3,6 +3,26 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
 
+/**
+ * Migración CreateProductosUsadosCitaTable
+ *
+ * Esta migración crea la tabla 'productos_usados_cita' con las siguientes columnas:
+ * - id: NUMBER generado como identidad (PRIMARY KEY)
+ * - citaId: NUMBER NOT NULL (FOREIGN KEY a citas.id)
+ * - inventarioId: NUMBER NOT NULL (FOREIGN KEY a inventario.id)
+ * - cantidad: NUMBER NOT NULL
+ *
+ * Define la función y procedimientos almacenados:
+ * - DescontarUnidadesProducto: función para descontar stock y retornar la nueva cantidad
+ * - ConsultarProductosUsadosCitaPorId: devuelve productos usados de una cita
+ * - AgregarProductoACita: función para insertar o actualizar productos en una cita
+ * - InsertarProductoUsadoCita: procedimiento para agregar producto y descontar stock
+ * - EliminarProductosUsadosCitaPorId: elimina productos usados de una cita
+ * - ObtenerCantidadProductoCita: función para obtener cantidad de un producto en una cita
+ * - ActualizarCantidadInventario: función para ajustar stock de inventario
+ * - ActualizarCantidadEnCita: función para actualizar cantidad en la cita
+ * - ActualizarCantidadProducto: función para gestionar cambios de cantidad en la cita
+ */
 return new class extends Migration {
     public function up(): void
     {

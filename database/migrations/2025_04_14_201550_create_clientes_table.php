@@ -3,6 +3,22 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
 
+/**
+ * Migración CreateClientesTable
+ *
+ * Esta migración crea la tabla 'clientes' con las siguientes columnas:
+ * - id: NUMBER generado como identidad (PRIMARY KEY)
+ * - direccion: VARCHAR2(255) NOT NULL
+ * - idUsuario: NUMBER NOT NULL (FOREIGN KEY a usuarios.id)
+ *
+ * Además define los procedimientos almacenados:
+ * - ConsultarClientes: devuelve todos los clientes con datos de usuario
+ * - ConsultarClientePorId: devuelve un cliente por ID con datos de usuario
+ * - ConsultarClienteIdPorIdUsuario: obtiene el ID del cliente a partir del ID de usuario
+ * - ActualizarCliente: actualiza los datos de un cliente
+ * - EliminarClientePorId: elimina un cliente por ID
+ * - InsertarCliente: inserta un nuevo cliente y retorna su ID
+ */
 return new class extends Migration {
     public function up(): void
     {

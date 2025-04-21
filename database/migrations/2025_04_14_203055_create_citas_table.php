@@ -174,7 +174,6 @@ return new class extends Migration {
             END;
         ");
 
-        // Add the stored procedure for getting user appointments with details
         DB::unprepared("
             CREATE OR REPLACE PROCEDURE ConsultarCitasConDetallesPorUsuario(
                 p_usuario_id IN NUMBER,

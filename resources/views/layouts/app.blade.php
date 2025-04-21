@@ -54,6 +54,9 @@
                         @auth
                             @if(Auth::user()->rol === 'cliente')
                                 <li class="nav-item">
+                                    <a class="nav-link" href="/pets">Administrar Mascotas</a>
+                                </li>
+                                <li class="nav-item">
                                     <a class="nav-link" href="/appointments">Administrar Citas</a>
                                 </li>
                                 <li class="nav-item">

@@ -78,6 +78,14 @@ return new class extends Migration {
             END;
         ");
 
+        DB::unprepared("
+            CREATE OR REPLACE PROCEDURE EliminarAdministradorPorUsuarioId(p_id IN NUMBER) IS
+            BEGIN
+                DELETE FROM administradores WHERE idUsuario = p_id;
+                COMMIT;
+            END;
+        ");
+
         // Procedimiento para insertar un administrador y retornar su id
         DB::unprepared("
             CREATE OR REPLACE PROCEDURE InsertarAdministrador(
@@ -99,6 +107,7 @@ return new class extends Migration {
         DB::unprepared("DROP PROCEDURE ConsultarAdministradorPorId");
         DB::unprepared("DROP PROCEDURE ActualizarAdministrador");
         DB::unprepared("DROP PROCEDURE EliminarAdministradorPorId");
+        DB::unprepared("DROP PROCEDURE EliminarAdministradorPorUsuarioId");
         DB::unprepared("DROP PROCEDURE InsertarAdministrador");
         DB::unprepared("DROP TABLE administradores");
     }

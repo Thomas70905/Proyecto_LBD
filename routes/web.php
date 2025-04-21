@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\PetsController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\ServiceController;
@@ -32,6 +33,7 @@ Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 Route::get('/signin', [SignInController::class, 'show'])->name('signin.form');
 Route::post('/signin', [SignInController::class, 'register'])->name('signin.register');
 
+Route::resource('pets', PetsController::class);
 Route::resource('employees', EmployeeController::class);
 Route::resource('inventory', InventoryController::class);
 Route::resource('services', ServiceController::class);

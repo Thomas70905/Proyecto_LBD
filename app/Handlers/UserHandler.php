@@ -234,9 +234,6 @@ class UserHandler
         return $empleados;
     }
 
-    /**
-     * Obtiene un usuario por correo usando SP ConsultarUsuarioPorEmail.
-     */
     public function getUsuarioPorCorreo(string $email): ?array
     {
         $sql  = "BEGIN ConsultarUsuarioPorEmail(:p_email, :cursor); END;";
@@ -257,10 +254,87 @@ class UserHandler
             : null;
     }
 
+    public function getUsuarioPorId(int $id): ?array
+    {
+        $sql = "BEGIN ConsultarUsuarioPorId(:p_id, :cursor); END;";
+        $stmt = $this->pdo->prepare($sql);
+        
+        $stmt->bindParam(':p_id', $id, \PDO::PARAM_INT);
+
+        $cursor = null;
+        $stmt->bindParam(':cursor', $cursor, \PDO::PARAM_STMT);
+        
+        $stmt->execute();
+        
+        oci_execute($cursor, OCI_DEFAULT);
+
+        $usuario = oci_fetch_assoc($cursor);
+
+        oci_free_statement($cursor);
+
+        return $usuario ? array_change_key_case($usuario, CASE_LOWER) : null;
+    }
+
+    public function getClienteIdPorUsuarioId(int $idUsuario): ?int
+    {
+        $sql  = "BEGIN ConsultarClienteIdPorIdUsuario(:p_idUsuario, :p_id); END;";
+        $stmt = $this->pdo->prepare($sql);
+
+        $stmt->bindParam(':p_idUsuario', $idUsuario, \PDO::PARAM_INT);
+
+        $clienteId = null;
+        $stmt->bindParam(':p_id', $clienteId, \PDO::PARAM_INT|\PDO::PARAM_INPUT_OUTPUT, 32);
+
+        $stmt->execute();
+
+        return $clienteId;
+    }
+
     /**
-     * Marca en_recuperacion y actualiza contraseña temporal usando SP
-     * MarcarUsuarioRecuperacionContrasenaPorCorreo(p_email, p_password_temp)
+     * Elimina un usuario llamando al SP EliminarUsuarioPorId.
      */
+    public function deleteUsuario(int $id): void
+    {
+        $sql = "
+            BEGIN
+                EliminarUsuarioPorId(:p_id);
+            END;
+        ";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->bindParam(':p_id', $id, \PDO::PARAM_INT);
+        $stmt->execute();
+    }
+
+    /**
+     * Elimina un registro de veterinario usando el SP EliminarVeterinarioPorUsuarioId.
+     */
+    public function deleteVeterinarioPorUsuarioId(int $userId): void
+    {
+        $sql = "
+            BEGIN
+                EliminarVeterinarioPorUsuarioId(:p_id);
+            END;
+        ";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->bindParam(':p_id', $userId, \PDO::PARAM_INT);
+        $stmt->execute();
+    }
+
+    /**
+     * Elimina un registro de administrador usando el SP EliminarAdministradorPorUsuarioId.
+     */
+    public function deleteAdministradorPorUsuarioId(int $userId): void
+    {
+        $sql = "
+            BEGIN
+                EliminarAdministradorPorUsuarioId(:p_id);
+            END;
+        ";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->bindParam(':p_id', $userId, \PDO::PARAM_INT);
+        $stmt->execute();
+    }
+
     public function marcarUsuarioRecuperacion(string $email, string $tempPassword): void
     {
         $sql = "

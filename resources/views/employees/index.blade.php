@@ -19,17 +19,15 @@
                 </tr>
             </thead>
             <tbody>
-                @forelse ($veterinarios as $veterinario)
+                @forelse ($empleados as $empleado)
                     <tr>
-                        <td>{{ $veterinario['id'] }}</td>
-                        <td>{{ $veterinario['nombre_completo'] }}</td>
-                        <td>{{ $veterinario['telefono'] }}</td>
-                        <td>{{ $veterinario['email'] }}</td>      {{-- muestra correo --}}
-                        <td>{{ $veterinario['rol'] }}</td>       {{-- muestra rol --}}
+                        <td>{{ $empleado['id'] }}</td>
+                        <td>{{ $empleado['nombre_completo'] }}</td>
+                        <td>{{ $empleado['telefono'] }}</td>
+                        <td>{{ $empleado['email'] }}</td>      {{-- muestra correo --}}
+                        <td>{{ $empleado['rol'] }}</td>       {{-- muestra rol --}}
                         <td>
-                            <a href="{{ route('employees.edit', $veterinario['id']) }}"
-                               class="btn btn-sm btn-primary">Editar</a>
-                            <form action="{{ route('employees.destroy', $veterinario['id']) }}"
+                            <form action="{{ route('employees.destroy', $empleado['id']) }}"
                                   method="POST" class="d-inline">
                                 @csrf
                                 @method('DELETE')

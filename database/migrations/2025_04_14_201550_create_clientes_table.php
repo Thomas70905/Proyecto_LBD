@@ -56,6 +56,19 @@ return new class extends Migration {
             END;
         ");
 
+        DB::unprepared("
+            CREATE OR REPLACE PROCEDURE ConsultarClienteIdPorIdUsuario(
+                p_idUsuario IN NUMBER,
+                p_id        OUT NUMBER
+            ) IS
+            BEGIN
+                SELECT id
+                INTO p_id
+                FROM clientes
+                WHERE idUsuario = p_idUsuario;
+            END;
+        ");
+
         // SP: actualizar un cliente
         DB::unprepared("
             CREATE OR REPLACE PROCEDURE ActualizarCliente(
@@ -101,9 +114,11 @@ return new class extends Migration {
     {
         DB::unprepared("DROP PROCEDURE ConsultarClientes");
         DB::unprepared("DROP PROCEDURE ConsultarClientePorId");
+        DB::unprepared("DROP PROCEDURE ConsultarClienteIdPorIdUsuario");
         DB::unprepared("DROP PROCEDURE ActualizarCliente");
         DB::unprepared("DROP PROCEDURE EliminarClientePorId");
         DB::unprepared("DROP PROCEDURE InsertarCliente");
+
         DB::unprepared("DROP TABLE clientes");
     }
 };

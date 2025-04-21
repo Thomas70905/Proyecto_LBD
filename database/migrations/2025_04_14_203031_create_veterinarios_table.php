@@ -79,6 +79,14 @@ return new class extends Migration {
             END;
         ");
 
+        DB::unprepared("
+            CREATE OR REPLACE PROCEDURE EliminarVeterinarioPorUsuarioId(p_id IN NUMBER) IS
+            BEGIN
+                DELETE FROM veterinarios WHERE idUsuario = p_id;
+                COMMIT;
+            END;
+        ");
+
         // SP: insertar un veterinario (solo idUsuario) y retornar su id
         DB::unprepared("
             CREATE OR REPLACE PROCEDURE InsertarVeterinario(
@@ -100,6 +108,7 @@ return new class extends Migration {
         DB::unprepared("DROP PROCEDURE ConsultarVeterinarioPorId");
         DB::unprepared("DROP PROCEDURE ActualizarVeterinario");
         DB::unprepared("DROP PROCEDURE EliminarVeterinarioPorId");
+        DB::unprepared("DROP PROCEDURE EliminarVeterinarioPorUsuarioId");
         DB::unprepared("DROP PROCEDURE InsertarVeterinario");
         DB::unprepared("DROP TABLE veterinarios");
     }

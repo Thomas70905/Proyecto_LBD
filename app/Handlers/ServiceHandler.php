@@ -4,6 +4,31 @@ namespace App\Handlers;
 
 use Illuminate\Support\Facades\DB;
 
+/**
+ * Manejador de servicios
+ * 
+ * Esta clase se encarga de gestionar todas las operaciones relacionadas
+ * con los servicios ofrecidos por la clínica veterinaria. Proporciona
+ * métodos para:
+ * 
+ * 1. Gestión de servicios:
+ *    - Creación de nuevos servicios
+ *    - Actualización de información
+ *    - Eliminación de servicios
+ *    - Consulta de servicios disponibles
+ * 
+ * 2. Operaciones de base de datos:
+ *    - Ejecución de procedimientos almacenados
+ *    - Manejo de transacciones
+ *    - Validación de datos
+ * 
+ * 3. Integración:
+ *    - Conexión con la base de datos
+ *    - Interacción con otros handlers
+ *    - Manejo de errores
+ * 
+ * @package App\Handlers
+ */
 class ServiceHandler
 {
     protected $pdo;
@@ -13,6 +38,14 @@ class ServiceHandler
         $this->pdo = DB::getPdo();
     }
 
+    /**
+     * Obtiene todos los servicios disponibles.
+     * 
+     * Este método ejecuta el procedimiento almacenado para obtener
+     * todos los servicios registrados en el sistema.
+     * 
+     * @return array Lista de servicios
+     */
     public function getAllServices(): array
     {
         $sql = "BEGIN ConsultarServicios(:cursor); END;";
@@ -44,7 +77,16 @@ class ServiceHandler
         return $services;
     }
 
-    public function getServiceById(int $id): ?array
+    /**
+     * Obtiene los detalles de un servicio específico.
+     * 
+     * Este método ejecuta el procedimiento almacenado para obtener
+     * toda la información detallada de un servicio específico.
+     * 
+     * @param int $id ID del servicio
+     * @return array Detalles del servicio
+     */
+    public function getServiceDetails(int $id): array
     {
         $sql = "BEGIN ConsultarServicioPorId(:id, :cursor); END;";
         $stmt = $this->pdo->prepare($sql);
@@ -70,44 +112,60 @@ class ServiceHandler
             }
         }
 
-        return $service ?: null;
+        return $service ?: [];
     }
 
-    public function insertService(string $name, string $description, float $cost, int $duration): int
+    /**
+     * Crea un nuevo servicio en el sistema.
+     * 
+     * Este método ejecuta el procedimiento almacenado para crear
+     * un nuevo servicio con toda su información.
+     * 
+     * @param array $data Datos del servicio
+     * @return array Resultado de la operación
+     */
+    public function createService(array $data): array
     {
-        $sql = "BEGIN InsertarServicio(:name, :description, :cost, :duration, :id); END;";
-        $stmt = $this->pdo->prepare($sql);
-
-        $id = null;
-        $stmt->bindParam(':name', $name);
-        $stmt->bindParam(':description', $description);
-        $stmt->bindParam(':cost', $cost);
-        $stmt->bindParam(':duration', $duration);
-        $stmt->bindParam(':id', $id, \PDO::PARAM_INT | \PDO::PARAM_INPUT_OUTPUT, 32);
-        $stmt->execute();
-
-        return $id;
+        return DB::select('CALL sp_create_service(?, ?, ?, ?)', [
+            $data['name'],
+            $data['description'],
+            $data['price'],
+            $data['duration']
+        ]);
     }
 
-    public function updateService(int $id, string $name, string $description, float $cost, int $duration): void
+    /**
+     * Actualiza la información de un servicio existente.
+     * 
+     * Este método ejecuta el procedimiento almacenado para actualizar
+     * la información de un servicio específico.
+     * 
+     * @param int $id ID del servicio
+     * @param array $data Nuevos datos del servicio
+     * @return array Resultado de la operación
+     */
+    public function updateService(int $id, array $data): array
     {
-        $sql = "BEGIN ActualizarServicio(:id, :name, :description, :cost, :duration); END;";
-        $stmt = $this->pdo->prepare($sql);
-
-        $stmt->bindParam(':id', $id);
-        $stmt->bindParam(':name', $name);
-        $stmt->bindParam(':description', $description);
-        $stmt->bindParam(':cost', $cost);
-        $stmt->bindParam(':duration', $duration);
-        $stmt->execute();
+        return DB::select('CALL sp_update_service(?, ?, ?, ?, ?)', [
+            $id,
+            $data['name'],
+            $data['description'],
+            $data['price'],
+            $data['duration']
+        ]);
     }
 
-    public function deleteService(int $id): void
+    /**
+     * Elimina un servicio del sistema.
+     * 
+     * Este método ejecuta el procedimiento almacenado para eliminar
+     * un servicio específico y todos sus registros relacionados.
+     * 
+     * @param int $id ID del servicio
+     * @return array Resultado de la operación
+     */
+    public function deleteService(int $id): array
     {
-        $sql = "BEGIN EliminarServicioPorId(:id); END;";
-        $stmt = $this->pdo->prepare($sql);
-
-        $stmt->bindParam(':id', $id);
-        $stmt->execute();
+        return DB::select('CALL sp_delete_service(?)', [$id]);
     }
 }

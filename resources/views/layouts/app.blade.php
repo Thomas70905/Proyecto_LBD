@@ -5,17 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'Document')</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        /* Ensure the footer stays at the bottom */
-        body {
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-        }
-        main {
-            flex: 1;
-        }
-    </style>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="{{ asset('css/app.css') }}" rel="stylesheet">
     @yield('styles')
 </head>
 <body>
@@ -60,10 +52,7 @@
                                     <a class="nav-link" href="/appointments">Administrar Citas</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link" href="/clinical-history">Historial Clínico</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" href="/reports">Generación Reportes</a>
+                                    <a class="nav-link d-none d-lg-block" href="{{ route('appointment-history.index') }}">Historial Clínico</a>
                                 </li>
                             @endif
                             @if(Auth::user()->rol === 'administrador')
@@ -72,7 +61,6 @@
                                 </li>
                             @endif
                             @if(Auth::user()->rol === 'veterinario' || Auth::user()->rol === 'administrador')
-
                                 <li class="nav-item">
                                     <a class="nav-link" href="/inventory">Administrar Inventario</a>
                                 </li>
@@ -80,10 +68,7 @@
                                     <a class="nav-link" href="/services">Administrar Servicio</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link" href="/appointments">Administrar Citas</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" href="/clinical-history">Historial Clínico</a>
+                                    <a class="nav-link" href="/appointment-management">Gestionar Citas</a>
                                 </li>
                             @endif
                         @endauth

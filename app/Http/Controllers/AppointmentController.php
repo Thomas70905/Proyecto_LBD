@@ -7,21 +7,27 @@ use Illuminate\Support\Carbon;
 use App\Handlers\AppointmentHandler;
 use App\Handlers\PetsHandler;
 use App\Handlers\ServiceHandler;
+use App\Handlers\UserHandler;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\AppointmentNotificationMail;
 
 class AppointmentController extends Controller
 {
     protected $appointmentHandler;
     protected $petsHandler;
     protected $serviceHandler;
+    protected $userHandler;
 
     public function __construct(
         AppointmentHandler $appointmentHandler,
         PetsHandler        $petsHandler,
-        ServiceHandler    $serviceHandler
+        ServiceHandler    $serviceHandler,
+        UserHandler       $userHandler
     ) {
         $this->appointmentHandler = $appointmentHandler;
         $this->petsHandler        = $petsHandler;
         $this->serviceHandler    = $serviceHandler;
+        $this->userHandler       = $userHandler;
     }
 
     // Muestra la lista de citas
@@ -34,7 +40,8 @@ class AppointmentController extends Controller
     // Formulario para crear una nueva cita
     public function create()
     {
-        $pets     = $this->petsHandler->getAllPets();
+        $userId = auth()->id();
+        $pets = $this->petsHandler->getPetsByUserId($userId);
         $services = $this->serviceHandler->getAllServices();
         return view('appointments.create', compact('pets', 'services'));
     }
@@ -59,6 +66,23 @@ class AppointmentController extends Controller
             $request->descripcion,
             -1
         );
+
+        // Get client's email and send notification
+        $userId = auth()->id();
+        $user = $this->userHandler->getUsuarioPorId($userId);
+        $pet = $this->petsHandler->getPetById($request->idMascota);
+        $service = $this->serviceHandler->getServiceById($request->idServicio);
+
+        if ($user) {
+            Mail::to($user['email'])->send(new AppointmentNotificationMail([
+                'nombre_cliente' => $user['nombre_completo'],
+                'nombre_mascota' => $pet['nombre_completo'],
+                'nombre_servicio' => $service['nombre'],
+                'fecha' => $fechaHora->format('Y-m-d'),
+                'hora' => $fechaHora->format('H:i'),
+                'descripcion' => $request->descripcion
+            ]));
+        }
 
         return redirect()->route('appointments.index')
                          ->with('status', 'Cita creada exitosamente.');

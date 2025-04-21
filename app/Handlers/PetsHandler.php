@@ -38,6 +38,58 @@ class PetsHandler
         return $pets;
     }
 
+    public function getPetsByClientId(int $clientId): array
+    {
+        $sql  = "BEGIN ConsultarMascotasPorCliente(:p_idCliente, :cursor); END;";
+        $stmt = $this->pdo->prepare($sql);
+
+        $cursor = null;
+        $stmt->bindParam(':p_idCliente', $clientId, \PDO::PARAM_INT);
+        $stmt->bindParam(':cursor', $cursor, \PDO::PARAM_STMT);
+        $stmt->execute();
+        oci_execute($cursor, OCI_DEFAULT);
+
+        $pets = [];
+        while ($row = oci_fetch_assoc($cursor)) {
+            $row = array_change_key_case($row, CASE_LOWER);
+            foreach ($row as $k => $v) {
+                if ($v instanceof \OCILob) {
+                    $row[$k] = $v->load();
+                }
+            }
+            $pets[] = $row;
+        }
+        oci_free_statement($cursor);
+
+        return $pets;
+    }
+
+    public function getPetsByUserId(int $userId): array
+    {
+        $sql  = "BEGIN ConsultarMascotasPorUsuarioId(:p_idUsuario, :cursor); END;";
+        $stmt = $this->pdo->prepare($sql);
+
+        $cursor = null;
+        $stmt->bindParam(':p_idUsuario', $userId, \PDO::PARAM_INT);
+        $stmt->bindParam(':cursor', $cursor, \PDO::PARAM_STMT);
+        $stmt->execute();
+        oci_execute($cursor, OCI_DEFAULT);
+
+        $pets = [];
+        while ($row = oci_fetch_assoc($cursor)) {
+            $row = array_change_key_case($row, CASE_LOWER);
+            foreach ($row as $k => $v) {
+                if ($v instanceof \OCILob) {
+                    $row[$k] = $v->load();
+                }
+            }
+            $pets[] = $row;
+        }
+        oci_free_statement($cursor);
+
+        return $pets;
+    }
+
     public function getPetById(int $id): ?array
     {
         $sql  = "BEGIN ConsultarMascotaPorId(:id, :cursor); END;";

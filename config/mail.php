@@ -1,5 +1,34 @@
 <?php
 
+/**
+ * Configuración del sistema de correo electrónico
+ * 
+ * Este archivo define la configuración del sistema de correo electrónico
+ * de la aplicación. Incluye la configuración del servidor SMTP,
+ * el formato de los correos y las opciones de envío.
+ * 
+ * Estructura:
+ * 1. Configuración del driver
+ * 2. Configuración del host
+ * 3. Configuración del puerto
+ * 4. Configuración de autenticación
+ * 5. Configuración de encriptación
+ * 6. Configuración del remitente
+ * 7. Configuración de markdown
+ * 
+ * Variables de entorno:
+ * - MAIL_MAILER: Driver a utilizar (smtp, sendmail, etc.)
+ * - MAIL_HOST: Servidor SMTP
+ * - MAIL_PORT: Puerto del servidor
+ * - MAIL_USERNAME: Usuario SMTP
+ * - MAIL_PASSWORD: Contraseña SMTP
+ * - MAIL_ENCRYPTION: Tipo de encriptación (tls, ssl)
+ * - MAIL_FROM_ADDRESS: Dirección del remitente
+ * - MAIL_FROM_NAME: Nombre del remitente
+ * 
+ * @package Config
+ */
+
 return [
 
     /*
@@ -14,7 +43,7 @@ return [
     |
     */
 
-    'default' => env('MAIL_MAILER', 'log'),
+    'default' => env('MAIL_MAILER', 'smtp'),
 
     /*
     |--------------------------------------------------------------------------
@@ -39,14 +68,13 @@ return [
 
         'smtp' => [
             'transport' => 'smtp',
-            'scheme' => env('MAIL_SCHEME'),
-            'url' => env('MAIL_URL'),
-            'host' => env('MAIL_HOST', '127.0.0.1'),
-            'port' => env('MAIL_PORT', 2525),
+            'host' => env('MAIL_HOST', 'smtp.mailgun.org'),
+            'port' => env('MAIL_PORT', 587),
+            'encryption' => env('MAIL_ENCRYPTION', 'tls'),
             'username' => env('MAIL_USERNAME'),
             'password' => env('MAIL_PASSWORD'),
             'timeout' => null,
-            'local_domain' => env('MAIL_EHLO_DOMAIN', parse_url(env('APP_URL', 'http://localhost'), PHP_URL_HOST)),
+            'auth_mode' => null,
         ],
 
         'ses' => [
@@ -67,7 +95,7 @@ return [
 
         'sendmail' => [
             'transport' => 'sendmail',
-            'path' => env('MAIL_SENDMAIL_PATH', '/usr/sbin/sendmail -bs -i'),
+            'path' => '/usr/sbin/sendmail -bs',
         ],
 
         'log' => [
@@ -110,7 +138,14 @@ return [
 
     'from' => [
         'address' => env('MAIL_FROM_ADDRESS', 'hello@example.com'),
-        'name' => env('MAIL_FROM_NAME', 'Example'),
+        'name' => env('MAIL_FROM_NAME', 'Veterinaria Moncada'),
+    ],
+
+    'markdown' => [
+        'theme' => 'default',
+        'paths' => [
+            resource_path('views/vendor/mail'),
+        ],
     ],
 
 ];

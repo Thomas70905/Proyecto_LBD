@@ -102,6 +102,110 @@ return new class extends Migration {
                 COMMIT;
             END;
         ");
+
+        DB::unprepared("
+            CREATE OR REPLACE PROCEDURE ConsultarCitasConDetalles(cur OUT SYS_REFCURSOR) IS
+            BEGIN
+                OPEN cur FOR 
+                    SELECT 
+                        c.id,
+                        c.fechaInicio,
+                        c.descripcion,
+                        c.asistencia,
+                        m.nombre_completo as nombre_mascota,
+                        m.edad as edad_mascota,
+                        m.peso as peso_mascota,
+                        m.raza as raza_mascota,
+                        m.especie as especie_mascota,
+                        s.nombre as nombre_servicio,
+                        u.nombre_completo as nombre_cliente,
+                        u.telefono as telefono_cliente,
+                        cl.direccion as direccion_cliente
+                    FROM citas c
+                    JOIN mascotas m ON c.idMascota = m.id
+                    JOIN servicios s ON c.idServicio = s.id
+                    JOIN clientes cl ON m.idCliente = cl.id
+                    JOIN usuarios u ON cl.idUsuario = u.id
+                    ORDER BY c.fechaInicio DESC;
+            END;
+        ");
+
+        DB::unprepared("
+            CREATE OR REPLACE PROCEDURE ConsultarCitaConDetallesPorId(
+                p_id IN NUMBER,
+                cur OUT SYS_REFCURSOR
+            ) IS
+            BEGIN
+                OPEN cur FOR 
+                    SELECT 
+                        c.id,
+                        c.fechaInicio,
+                        c.descripcion,
+                        c.asistencia,
+                        m.nombre_completo as nombre_mascota,
+                        m.edad as edad_mascota,
+                        m.peso as peso_mascota,
+                        m.raza as raza_mascota,
+                        m.especie as especie_mascota,
+                        s.nombre as nombre_servicio,
+                        s.precio as precio_servicio,
+                        u.nombre_completo as nombre_cliente,
+                        u.telefono as telefono_cliente,
+                        cl.direccion as direccion_cliente
+                    FROM citas c
+                    JOIN mascotas m ON c.idMascota = m.id
+                    JOIN servicios s ON c.idServicio = s.id
+                    JOIN clientes cl ON m.idCliente = cl.id
+                    JOIN usuarios u ON cl.idUsuario = u.id
+                    WHERE c.id = p_id;
+            END;
+        ");
+
+        DB::unprepared("
+            CREATE OR REPLACE PROCEDURE ActualizarAsistenciaCita(
+                p_id IN NUMBER,
+                p_asistencia IN NUMBER
+            ) IS
+            BEGIN
+                UPDATE citas
+                SET asistencia = p_asistencia
+                WHERE id = p_id;
+                COMMIT;
+            END;
+        ");
+
+        // Add the stored procedure for getting user appointments with details
+        DB::unprepared("
+            CREATE OR REPLACE PROCEDURE ConsultarCitasConDetallesPorUsuario(
+                p_usuario_id IN NUMBER,
+                cur OUT SYS_REFCURSOR
+            ) IS
+            BEGIN
+                OPEN cur FOR 
+                    SELECT 
+                        c.id,
+                        c.fechaInicio,
+                        c.descripcion,
+                        c.asistencia,
+                        m.nombre_completo as nombre_mascota,
+                        m.edad as edad_mascota,
+                        m.peso as peso_mascota,
+                        m.raza as raza_mascota,
+                        m.especie as especie_mascota,
+                        s.nombre as nombre_servicio,
+                        s.precio as precio_servicio,
+                        u.nombre_completo as nombre_cliente,
+                        u.telefono as telefono_cliente,
+                        cl.direccion as direccion_cliente
+                    FROM citas c
+                    JOIN mascotas m ON c.idMascota = m.id
+                    JOIN servicios s ON c.idServicio = s.id
+                    JOIN clientes cl ON m.idCliente = cl.id
+                    JOIN usuarios u ON cl.idUsuario = u.id
+                    WHERE u.id = p_usuario_id
+                    ORDER BY c.fechaInicio DESC;
+            END;
+        ");
     }
     
     public function down(): void
@@ -111,6 +215,11 @@ return new class extends Migration {
         DB::unprepared("DROP PROCEDURE ActualizarCita");
         DB::unprepared("DROP PROCEDURE EliminarCitaPorId");
         DB::unprepared("DROP PROCEDURE InsertarCita");
+        DB::unprepared("DROP PROCEDURE ConsultarCitasConDetalles");
+        DB::unprepared("DROP PROCEDURE ConsultarCitaConDetallesPorId");
+        DB::unprepared("DROP PROCEDURE ActualizarAsistenciaCita");
+        
+        DB::unprepared("DROP PROCEDURE ConsultarCitasConDetallesPorUsuario");
         
         DB::unprepared("DROP TABLE citas");
     }

@@ -33,6 +33,18 @@ return new class extends Migration {
         ");
         
         DB::unprepared("
+            CREATE OR REPLACE PROCEDURE ConsultarMascotasPorUsuarioId(p_idUsuario IN NUMBER, cur OUT SYS_REFCURSOR) IS
+            BEGIN
+                OPEN cur FOR 
+                    SELECT m.* 
+                    FROM mascotas m
+                    JOIN clientes c ON m.idCliente = c.id
+                    JOIN usuarios u ON c.idUsuario = u.id
+                    WHERE u.id = p_idUsuario;
+            END;
+        ");
+        
+        DB::unprepared("
             CREATE OR REPLACE PROCEDURE ActualizarMascota(
                 p_id IN NUMBER,
                 p_nombre_completo IN VARCHAR2,
@@ -86,6 +98,7 @@ return new class extends Migration {
     {
         DB::unprepared("DROP PROCEDURE ConsultarMascotas");
         DB::unprepared("DROP PROCEDURE ConsultarMascotaPorId");
+        DB::unprepared("DROP PROCEDURE ConsultarMascotasPorUsuarioId");
         DB::unprepared("DROP PROCEDURE ActualizarMascota");
         DB::unprepared("DROP PROCEDURE EliminarMascotaPorId");
         DB::unprepared("DROP PROCEDURE InsertarMascota");

@@ -20,7 +20,8 @@ class PetsController extends Controller
     // Muestra la lista de mascotas
     public function index()
     {
-        $pets = $this->petsHandler->getAllPets();
+        $userId = auth()->id();
+        $pets = $this->petsHandler->getPetsByUserId($userId);
         return view('pets.index', compact('pets'));
     }
 

@@ -86,6 +86,6 @@ return new class extends Migration {
         DB::unprepared("DROP PROCEDURE EliminarInventarioPorId");
         DB::unprepared("DROP PROCEDURE InsertarInventario");
 
-        DB::unprepared("DROP TABLE inventario CASCADE CONSTRAINTS PURGE");
+        DB::unprepared("DROP TABLE inventario");
     }
 };

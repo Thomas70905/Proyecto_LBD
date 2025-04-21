@@ -65,10 +65,14 @@
                                 <li class="nav-item">
                                     <a class="nav-link" href="/reports">Generación Reportes</a>
                                 </li>
-                            @elseif(Auth::user()->rol === 'veterinario')
+                            @endif
+                            @if(Auth::user()->rol === 'administrador')
                                 <li class="nav-item">
                                     <a class="nav-link" href="/employees">Administrar Empleados</a>
                                 </li>
+                            @endif
+                            @if(Auth::user()->rol === 'veterinario' || Auth::user()->rol === 'administrador')
+
                                 <li class="nav-item">
                                     <a class="nav-link" href="/inventory">Administrar Inventario</a>
                                 </li>
@@ -80,9 +84,6 @@
                                 </li>
                                 <li class="nav-item">
                                     <a class="nav-link" href="/clinical-history">Historial Clínico</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" href="/reports">Generación Reportes</a>
                                 </li>
                             @endif
                         @endauth

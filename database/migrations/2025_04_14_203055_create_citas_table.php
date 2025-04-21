@@ -22,14 +22,38 @@ return new class extends Migration {
         DB::unprepared("
             CREATE OR REPLACE PROCEDURE ConsultarCitas(cur OUT SYS_REFCURSOR) IS
             BEGIN
-                OPEN cur FOR SELECT * FROM citas;
+                OPEN cur FOR
+                SELECT 
+                c.id,
+                m.nombre_completo AS mascota,
+                s.nombre          AS servicio,
+                c.fechaInicio,
+                c.descripcion,
+                c.asistencia
+                FROM citas c
+                JOIN mascotas m ON c.idMascota  = m.id
+                JOIN servicios s ON c.idServicio = s.id;
             END;
         ");
         
         DB::unprepared("
-            CREATE OR REPLACE PROCEDURE ConsultarCitaPorId(p_id IN NUMBER, cur OUT SYS_REFCURSOR) IS
+            CREATE OR REPLACE PROCEDURE ConsultarCitaPorId(
+                p_id IN NUMBER,
+                cur  OUT SYS_REFCURSOR
+            ) IS
             BEGIN
-                OPEN cur FOR SELECT * FROM citas WHERE id = p_id;
+                OPEN cur FOR
+                SELECT 
+                c.id,
+                m.nombre_completo AS mascota,
+                s.nombre          AS servicio,
+                c.fechaInicio,
+                c.descripcion,
+                c.asistencia
+                FROM citas c
+                JOIN mascotas m ON c.idMascota  = m.id
+                JOIN servicios s ON c.idServicio = s.id
+            WHERE c.id = p_id;
             END;
         ");
         
